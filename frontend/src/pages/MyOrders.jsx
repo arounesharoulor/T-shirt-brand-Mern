@@ -378,7 +378,7 @@ const MyOrders = () => {
               </div>
 
               {/* Items Table */}
-              <div className="mb-8 border border-slate-200 rounded-2xl overflow-hidden">
+              <div className="mb-12 border border-slate-200 rounded-2xl overflow-hidden">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
@@ -400,30 +400,25 @@ const MyOrders = () => {
                         <td className="py-5 px-6 text-right font-bold text-slate-900">{formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
                       </tr>
                     ))}
+                    {/* Totals inside the table */}
+                    <tr className="bg-slate-50/50">
+                      <td colSpan="3" className="py-4 px-6 text-right text-slate-500 font-medium border-t border-slate-200">Subtotal</td>
+                      <td className="py-4 px-6 text-right font-bold text-slate-700 border-t border-slate-200">{formatPrice(selectedInvoice.itemsPrice || 0)}</td>
+                    </tr>
+                    <tr className="bg-slate-50/50">
+                      <td colSpan="3" className="py-4 px-6 text-right text-slate-500 font-medium">Shipping</td>
+                      <td className="py-4 px-6 text-right font-bold text-slate-700">{selectedInvoice.shippingPrice === 0 ? 'Free' : formatPrice(selectedInvoice.shippingPrice)}</td>
+                    </tr>
+                    <tr className="bg-slate-50/50">
+                      <td colSpan="3" className="py-4 px-6 text-right text-slate-500 font-medium">Tax</td>
+                      <td className="py-4 px-6 text-right font-bold text-slate-700">{formatPrice(selectedInvoice.taxPrice)}</td>
+                    </tr>
+                    <tr className="bg-slate-50">
+                      <td colSpan="3" className="py-5 px-6 text-right font-bold text-slate-900 text-base border-t border-slate-200">Total Due</td>
+                      <td className="py-5 px-6 text-right font-display font-bold text-primary text-2xl border-t border-slate-200">{formatPrice(selectedInvoice.totalPrice)}</td>
+                    </tr>
                   </tbody>
                 </table>
-              </div>
-
-              {/* Totals */}
-              <div className="flex justify-end mb-16 text-sm">
-                <div className="w-full sm:w-80 bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                  <div className="flex justify-between py-2">
-                    <span className="text-slate-500">Subtotal</span>
-                    <span className="font-bold text-slate-700">{formatPrice(selectedInvoice.itemsPrice || 0)}</span>
-                  </div>
-                  <div className="flex justify-between py-2">
-                    <span className="text-slate-500">Shipping</span>
-                    <span className="font-bold text-slate-700">{selectedInvoice.shippingPrice === 0 ? 'Free' : formatPrice(selectedInvoice.shippingPrice)}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-slate-200 mb-2">
-                    <span className="text-slate-500">Tax</span>
-                    <span className="font-bold text-slate-700">{formatPrice(selectedInvoice.taxPrice)}</span>
-                  </div>
-                  <div className="flex justify-between py-2 items-center">
-                    <span className="font-bold text-slate-900 text-base">Total Due</span>
-                    <span className="font-display font-bold text-primary text-2xl">{formatPrice(selectedInvoice.totalPrice)}</span>
-                  </div>
-                </div>
               </div>
 
               {/* Footer */}
