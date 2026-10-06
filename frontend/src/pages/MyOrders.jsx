@@ -44,6 +44,117 @@ const MyOrders = () => {
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
+  const generateInvoice = (order) => {
+    const invoiceWindow = window.open('', '_blank');
+    const orderId = order._id.substring(order._id.length - 10).toUpperCase();
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    const itemsHtml = order.orderItems.map(item => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">
+          <strong>${item.name}</strong><br>
+          <small style="color: #666;">Size: ${item.size}</small>
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.qty || item.quantity || 1}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${formatPrice(item.price)}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
+      </tr>
+    `).join('');
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Invoice - ${orderId}</title>
+          <style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px; }
+            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 40px; }
+            .logo { font-size: 24px; font-weight: bold; color: #000; }
+            .invoice-title { font-size: 28px; font-weight: bold; color: #999; text-transform: uppercase; }
+            .details { display: flex; justify-content: space-between; margin-bottom: 40px; }
+            .details h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+            th { text-align: left; padding: 12px; border-bottom: 2px solid #333; font-size: 14px; text-transform: uppercase; color: #666; }
+            .totals { width: 50%; float: right; }
+            .total-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+            .grand-total { font-weight: bold; font-size: 18px; border-bottom: none; border-top: 2px solid #333; padding-top: 12px; margin-top: 4px; }
+            .footer { clear: both; text-align: center; margin-top: 60px; font-size: 12px; color: #999; }
+            @media print { body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">CustomTees</div>
+            <div class="invoice-title">Invoice</div>
+          </div>
+          
+          <div class="details">
+            <div>
+              <h3>Billed To:</h3>
+              <strong>${user.name}</strong><br>
+              ${user.email}<br><br>
+              <h3>Shipped To:</h3>
+              ${order.shippingAddress.street}<br>
+              ${order.shippingAddress.city}, ${order.shippingAddress.postalCode}<br>
+              ${order.shippingAddress.country}
+            </div>
+            <div style="text-align: right;">
+              <h3>Order ID:</h3>
+              #${orderId}<br><br>
+              <h3>Date of Issue:</h3>
+              ${orderDate}
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item Description</th>
+                <th style="text-align: center;">Qty</th>
+                <th style="text-align: right;">Unit Price</th>
+                <th style="text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>${formatPrice(order.itemsPrice || 0)}</span>
+            </div>
+            <div class="total-row">
+              <span>Shipping:</span>
+              <span>${order.shippingPrice === 0 ? 'Free' : formatPrice(order.shippingPrice)}</span>
+            </div>
+            <div class="total-row">
+              <span>Tax:</span>
+              <span>${formatPrice(order.taxPrice)}</span>
+            </div>
+            <div class="total-row grand-total">
+              <span>Total Amount:</span>
+              <span>${formatPrice(order.totalPrice)}</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Thank you for shopping with CustomTees! If you have any questions about this invoice, please contact support.</p>
+          </div>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    invoiceWindow.document.write(htmlContent);
+    invoiceWindow.document.close();
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading orders...</div>;
   }
@@ -91,7 +202,12 @@ const MyOrders = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-gray-500 mb-1">Order # {order._id.substring(order._id.length - 10).toUpperCase()}</p>
-                    <a href="#" className="text-blue-600 hover:underline font-medium">View Invoice</a>
+                    <button 
+                      onClick={() => generateInvoice(order)} 
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      View Invoice
+                    </button>
                   </div>
                 </div>
 
