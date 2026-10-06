@@ -302,110 +302,113 @@ const MyOrders = () => {
 
       {/* Invoice Modal Popup */}
       {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-gray-900/40 backdrop-blur-sm transition-opacity">
+          <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative flex flex-col">
             
-            {/* Modal Header actions */}
-            <div className="sticky top-0 right-0 p-4 flex justify-end gap-2 bg-white/90 backdrop-blur border-b border-gray-100 z-10">
-              <button 
-                onClick={() => window.print()} 
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Print
-              </button>
-              <button 
-                onClick={() => setSelectedInvoice(null)} 
-                className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Close
-              </button>
+            {/* Modal Header actions - Non printable */}
+            <div className="sticky top-0 right-0 px-6 py-4 flex justify-between items-center bg-white/95 backdrop-blur-md border-b border-gray-100 z-10 print:hidden">
+              <h3 className="font-semibold text-gray-800">Receipt Details</h3>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => window.print()} 
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Print
+                </button>
+                <button 
+                  onClick={() => setSelectedInvoice(null)} 
+                  className="px-4 py-2 text-sm font-semibold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
 
-            {/* Printable Invoice Area */}
+            {/* Printable Invoice Area - Apple/Shopify Style */}
             <div className="p-8 sm:p-12 print:p-0 print:m-0" id="printable-invoice">
               
-              {/* Invoice Header */}
-              <div className="flex justify-between items-start border-b-2 border-black pb-8 mb-8">
-                <div>
-                  <h2 className="text-2xl font-black tracking-tighter uppercase">CustomTees</h2>
-                  <p className="text-gray-500 text-sm mt-1">Order #{selectedInvoice._id.substring(selectedInvoice._id.length - 10).toUpperCase()}</p>
+              {/* Receipt Header */}
+              <div className="text-center mb-10">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-50 rounded-full mb-4">
+                  <Package className="w-6 h-6 text-blue-600" />
                 </div>
-                <div className="text-right">
-                  <h1 className="text-3xl font-light text-gray-400 uppercase tracking-widest">Invoice</h1>
-                  <p className="text-gray-900 font-medium mt-2">
-                    {new Date(selectedInvoice.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
-                </div>
-              </div>
-
-              {/* Billing Info */}
-              <div className="flex flex-col sm:flex-row justify-between gap-8 mb-10">
-                <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Billed To</p>
-                  <p className="font-bold text-gray-900">{user.name}</p>
-                  <p className="text-gray-600 text-sm">{user.email}</p>
-                </div>
-                <div className="sm:text-right">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Shipped To</p>
-                  <p className="text-gray-600 text-sm">
-                    {selectedInvoice.shippingAddress.street}<br />
-                    {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}<br />
-                    {selectedInvoice.shippingAddress.country}
-                  </p>
-                </div>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">CustomTees</h2>
+                <p className="text-gray-500 text-sm">Receipt for Order #{selectedInvoice._id.substring(selectedInvoice._id.length - 10).toUpperCase()}</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {new Date(selectedInvoice.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
               </div>
 
               {/* Items Table */}
-              <table className="w-full text-left mb-10">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Item</th>
-                    <th className="py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Qty</th>
-                    <th className="py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Price</th>
-                    <th className="py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {selectedInvoice.orderItems.map((item, idx) => (
-                    <tr key={idx}>
-                      <td className="py-4">
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <p className="text-sm text-gray-500">Size: {item.size}</p>
-                      </td>
-                      <td className="py-4 text-center text-gray-900">{item.qty || item.quantity || 1}</td>
-                      <td className="py-4 text-right text-gray-900">{formatPrice(item.price)}</td>
-                      <td className="py-4 text-right font-medium text-gray-900">{formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
+              <div className="border border-gray-200 rounded-xl overflow-hidden mb-8">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="py-3 px-4 font-semibold text-gray-700">Item</th>
+                      <th className="py-3 px-4 font-semibold text-gray-700 text-center w-20">Qty</th>
+                      <th className="py-3 px-4 font-semibold text-gray-700 text-right w-24">Total</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {selectedInvoice.orderItems.map((item, idx) => (
+                      <tr key={idx} className="bg-white">
+                        <td className="py-4 px-4">
+                          <p className="font-medium text-gray-900">{item.name}</p>
+                          <p className="text-gray-500 text-xs mt-0.5">Size: {item.size}</p>
+                        </td>
+                        <td className="py-4 px-4 text-center text-gray-600">{item.qty || item.quantity || 1}</td>
+                        <td className="py-4 px-4 text-right font-medium text-gray-900">{formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-              {/* Totals */}
-              <div className="flex justify-end">
-                <div className="w-full sm:w-1/2 space-y-3 text-sm">
-                  <div className="flex justify-between text-gray-600">
+              {/* Totals Section */}
+              <div className="flex flex-col sm:flex-row justify-between gap-8 mb-12">
+                
+                {/* Customer Details */}
+                <div className="flex-1 space-y-6">
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Customer</h4>
+                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Shipping Address</h4>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {selectedInvoice.shippingAddress.street}<br />
+                      {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}<br />
+                      {selectedInvoice.shippingAddress.country}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Price Breakdown */}
+                <div className="w-full sm:w-64 space-y-3">
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
                     <span className="text-gray-900">{formatPrice(selectedInvoice.itemsPrice || 0)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Shipping</span>
                     <span className="text-gray-900">{selectedInvoice.shippingPrice === 0 ? 'Free' : formatPrice(selectedInvoice.shippingPrice)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600 pb-3 border-b border-gray-100">
                     <span>Tax</span>
                     <span className="text-gray-900">{formatPrice(selectedInvoice.taxPrice)}</span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold pt-4 border-t-2 border-black mt-2">
-                    <span>Grand Total</span>
-                    <span>{formatPrice(selectedInvoice.totalPrice)}</span>
+                  <div className="flex justify-between items-end pt-1">
+                    <span className="font-semibold text-gray-900">Total</span>
+                    <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(selectedInvoice.totalPrice)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="mt-16 text-center text-sm text-gray-400">
-                <p>Thank you for shopping with CustomTees!</p>
-                <p>If you have any questions concerning this invoice, please contact support.</p>
+              <div className="text-center pt-8 border-t border-gray-100">
+                <p className="text-sm text-gray-500 font-medium mb-1">Thanks for shopping with CustomTees!</p>
+                <p className="text-xs text-gray-400">If you have any questions, reply to your order email or contact support.</p>
               </div>
 
             </div>
