@@ -333,48 +333,57 @@ const MyOrders = () => {
             <div className="p-8 sm:p-12 print:p-0 print:m-0 bg-white text-slate-900" id="printable-invoice">
               
               {/* Header */}
-              <div className="flex justify-between items-start mb-12">
-                <div>
-                  {/* Matching Website Logo */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="bg-primary/10 p-2 rounded-xl">
-                      <Shirt className="w-6 h-6 text-primary" />
-                    </div>
-                    <span className="font-display font-bold text-2xl tracking-tight text-slate-900">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-8 mb-8">
+                {/* Matching Website Logo */}
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 p-2.5 rounded-xl">
+                    <Shirt className="w-8 h-8 text-primary" />
+                  </div>
+                  <div>
+                    <span className="font-display font-bold text-3xl tracking-tight text-slate-900 block">
                       CustomTees
                     </span>
-                  </div>
-                  <p className="text-sm text-slate-500">123 Fashion Street</p>
-                  <p className="text-sm text-slate-500">contact@customtees.com</p>
-                </div>
-                <div className="text-right">
-                  <h2 className="text-2xl font-bold text-primary mb-2">Invoice</h2>
-                  <div className="inline-block text-sm text-right bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                      <span className="text-slate-500">Invoice No:</span>
-                      <span className="font-bold text-slate-900">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</span>
-                      <span className="text-slate-500">Date:</span>
-                      <span className="font-bold text-slate-900">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</span>
-                    </div>
+                    <span className="text-sm text-slate-500">123 Fashion Street, contact@customtees.com</span>
                   </div>
                 </div>
+                <h2 className="text-4xl font-display font-bold text-slate-200 uppercase tracking-widest">Invoice</h2>
               </div>
 
-              {/* Addresses */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-10 text-sm">
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+              {/* Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-sm">
+                
+                {/* Billed To Box */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col h-full">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Billed To</p>
-                  <p className="font-bold text-slate-900 text-base">{user.name}</p>
+                  <p className="font-bold text-slate-900 text-base mb-1">{user.name}</p>
                   <p className="text-slate-500">{user.email}</p>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+
+                {/* Shipped To Box */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col h-full">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Shipped To</p>
-                  <p className="font-bold text-slate-900 text-base">{selectedInvoice.shippingAddress.street}</p>
+                  <p className="font-bold text-slate-900 text-base mb-1">{selectedInvoice.shippingAddress.street}</p>
                   <p className="text-slate-500">
                     {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}<br />
                     {selectedInvoice.shippingAddress.country}
                   </p>
                 </div>
+
+                {/* Invoice Details Box */}
+                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex flex-col h-full">
+                  <p className="text-xs font-bold text-primary/60 uppercase tracking-wider mb-3">Invoice Details</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Invoice No:</span>
+                      <span className="font-bold text-slate-900">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Date:</span>
+                      <span className="font-bold text-slate-900">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               {/* Items Table */}
