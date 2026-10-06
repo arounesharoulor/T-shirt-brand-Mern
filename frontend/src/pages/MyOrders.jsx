@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, Truck, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
+import { Package, Truck, ArrowLeft, Clock, CheckCircle2, Shirt } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -302,60 +302,75 @@ const MyOrders = () => {
 
       {/* Invoice Modal Popup */}
       {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 transition-opacity">
-          <div className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm transition-opacity">
+          <div className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative flex flex-col border border-slate-200">
             
             {/* Modal Header actions - Non printable */}
-            <div className="sticky top-0 right-0 px-6 py-4 flex justify-between items-center bg-gray-50 border-b border-gray-200 z-10 print:hidden">
-              <h3 className="font-semibold text-gray-800">Invoice</h3>
-              <div className="flex gap-2">
+            <div className="sticky top-0 right-0 px-6 py-4 flex justify-between items-center bg-white/95 backdrop-blur-md border-b border-slate-100 z-10 print:hidden">
+              <div className="flex items-center gap-2">
+                <div className="bg-primary/10 p-1.5 rounded-lg">
+                  <Shirt className="w-4 h-4 text-primary" />
+                </div>
+                <h3 className="font-bold text-slate-800">Invoice Details</h3>
+              </div>
+              <div className="flex gap-3">
                 <button 
                   onClick={() => window.print()} 
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
                 >
                   Print
                 </button>
                 <button 
                   onClick={() => setSelectedInvoice(null)} 
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded hover:bg-gray-800 transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
                 >
                   Close
                 </button>
               </div>
             </div>
 
-            {/* Printable Invoice Area - Classic Business Style */}
-            <div className="p-8 sm:p-12 print:p-0 print:m-0 bg-white text-gray-900 font-sans" id="printable-invoice">
+            {/* Printable Invoice Area - Website Theme Style */}
+            <div className="p-8 sm:p-12 print:p-0 print:m-0 bg-white text-slate-900" id="printable-invoice">
               
               {/* Header */}
-              <div className="flex justify-between items-start border-b-2 border-gray-900 pb-6 mb-8">
+              <div className="flex justify-between items-start mb-12">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight mb-1">CustomTees</h1>
-                  <p className="text-sm text-gray-600">123 Fashion Street</p>
-                  <p className="text-sm text-gray-600">contact@customtees.com</p>
+                  {/* Matching Website Logo */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="bg-primary/10 p-2 rounded-xl">
+                      <Shirt className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-display font-bold text-2xl tracking-tight text-slate-900">
+                      CustomTees
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-500">123 Fashion Street</p>
+                  <p className="text-sm text-slate-500">contact@customtees.com</p>
                 </div>
                 <div className="text-right">
-                  <h2 className="text-4xl font-light text-gray-300 uppercase tracking-widest mb-2">Invoice</h2>
-                  <div className="grid grid-cols-2 gap-x-4 text-sm mt-4">
-                    <div className="text-gray-500 text-right">Invoice No:</div>
-                    <div className="font-medium">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</div>
-                    <div className="text-gray-500 text-right mt-1">Date:</div>
-                    <div className="font-medium mt-1">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</div>
+                  <h2 className="text-2xl font-bold text-primary mb-2">Invoice</h2>
+                  <div className="inline-block text-sm text-right bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      <span className="text-slate-500">Invoice No:</span>
+                      <span className="font-bold text-slate-900">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</span>
+                      <span className="text-slate-500">Date:</span>
+                      <span className="font-bold text-slate-900">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Addresses */}
-              <div className="flex flex-col sm:flex-row justify-between gap-8 mb-10 text-sm">
-                <div>
-                  <p className="font-bold text-gray-800 mb-2 border-b border-gray-200 inline-block pb-1">Billed To</p>
-                  <p className="font-medium text-gray-900">{user.name}</p>
-                  <p className="text-gray-600">{user.email}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-10 text-sm">
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Billed To</p>
+                  <p className="font-bold text-slate-900 text-base">{user.name}</p>
+                  <p className="text-slate-500">{user.email}</p>
                 </div>
-                <div className="sm:text-right">
-                  <p className="font-bold text-gray-800 mb-2 border-b border-gray-200 inline-block pb-1">Shipped To</p>
-                  <p className="text-gray-600">
-                    {selectedInvoice.shippingAddress.street}<br />
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Shipped To</p>
+                  <p className="font-bold text-slate-900 text-base">{selectedInvoice.shippingAddress.street}</p>
+                  <p className="text-slate-500">
                     {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}<br />
                     {selectedInvoice.shippingAddress.country}
                   </p>
@@ -363,26 +378,26 @@ const MyOrders = () => {
               </div>
 
               {/* Items Table */}
-              <div className="mb-8">
+              <div className="mb-8 border border-slate-200 rounded-2xl overflow-hidden">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gray-100 border-y border-gray-300">
-                      <th className="py-3 px-4 font-bold text-gray-800">Description</th>
-                      <th className="py-3 px-4 font-bold text-gray-800 text-center w-24">Quantity</th>
-                      <th className="py-3 px-4 font-bold text-gray-800 text-right w-32">Price</th>
-                      <th className="py-3 px-4 font-bold text-gray-800 text-right w-32">Amount</th>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="py-4 px-6 font-bold text-slate-700">Item</th>
+                      <th className="py-4 px-6 font-bold text-slate-700 text-center w-24">Qty</th>
+                      <th className="py-4 px-6 font-bold text-slate-700 text-right w-32">Price</th>
+                      <th className="py-4 px-6 font-bold text-slate-700 text-right w-32">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-slate-100">
                     {selectedInvoice.orderItems.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="py-4 px-4">
-                          <p className="font-medium text-gray-900">{item.name}</p>
-                          <p className="text-gray-500 text-xs">Size: {item.size}</p>
+                      <tr key={idx} className="bg-white">
+                        <td className="py-5 px-6">
+                          <p className="font-bold text-slate-900 text-base">{item.name}</p>
+                          <p className="text-slate-500 text-sm">Size: {item.size}</p>
                         </td>
-                        <td className="py-4 px-4 text-center text-gray-800">{item.qty || item.quantity || 1}</td>
-                        <td className="py-4 px-4 text-right text-gray-800">{formatPrice(item.price)}</td>
-                        <td className="py-4 px-4 text-right font-medium text-gray-900">{formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
+                        <td className="py-5 px-6 text-center font-medium text-slate-700">{item.qty || item.quantity || 1}</td>
+                        <td className="py-5 px-6 text-right font-medium text-slate-700">{formatPrice(item.price)}</td>
+                        <td className="py-5 px-6 text-right font-bold text-slate-900">{formatPrice(item.price * (item.qty || item.quantity || 1))}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -391,30 +406,30 @@ const MyOrders = () => {
 
               {/* Totals */}
               <div className="flex justify-end mb-16 text-sm">
-                <div className="w-full sm:w-72">
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium text-gray-900">{formatPrice(selectedInvoice.itemsPrice || 0)}</span>
+                <div className="w-full sm:w-80 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                  <div className="flex justify-between py-2">
+                    <span className="text-slate-500">Subtotal</span>
+                    <span className="font-bold text-slate-700">{formatPrice(selectedInvoice.itemsPrice || 0)}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium text-gray-900">{selectedInvoice.shippingPrice === 0 ? 'Free' : formatPrice(selectedInvoice.shippingPrice)}</span>
+                  <div className="flex justify-between py-2">
+                    <span className="text-slate-500">Shipping</span>
+                    <span className="font-bold text-slate-700">{selectedInvoice.shippingPrice === 0 ? 'Free' : formatPrice(selectedInvoice.shippingPrice)}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-900">
-                    <span className="text-gray-600">Tax</span>
-                    <span className="font-medium text-gray-900">{formatPrice(selectedInvoice.taxPrice)}</span>
+                  <div className="flex justify-between py-2 border-b border-slate-200 mb-2">
+                    <span className="text-slate-500">Tax</span>
+                    <span className="font-bold text-slate-700">{formatPrice(selectedInvoice.taxPrice)}</span>
                   </div>
-                  <div className="flex justify-between py-3">
-                    <span className="font-bold text-gray-900 text-base">Total Due</span>
-                    <span className="font-bold text-gray-900 text-lg">{formatPrice(selectedInvoice.totalPrice)}</span>
+                  <div className="flex justify-between py-2 items-center">
+                    <span className="font-bold text-slate-900 text-base">Total Due</span>
+                    <span className="font-display font-bold text-primary text-2xl">{formatPrice(selectedInvoice.totalPrice)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="text-center pt-6 border-t border-gray-200 text-sm text-gray-500">
-                <p className="mb-1 font-medium text-gray-700">Thank you for your business!</p>
-                <p>If you have any questions regarding this invoice, please contact support.</p>
+              <div className="text-center pt-8 border-t border-slate-100">
+                <p className="text-primary font-bold mb-1">Thank you for your business!</p>
+                <p className="text-sm text-slate-500">If you have any questions regarding this invoice, please contact support.</p>
               </div>
 
             </div>
