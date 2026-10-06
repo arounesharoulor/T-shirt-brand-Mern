@@ -350,36 +350,36 @@ const MyOrders = () => {
               </div>
 
               {/* Information Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-sm items-stretch">
                 
                 {/* Billed To Box */}
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col h-full">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Billed To</p>
-                  <p className="font-bold text-slate-900 text-base mb-1">{user.name}</p>
-                  <p className="text-slate-500">{user.email}</p>
+                  <p className="font-bold text-slate-900 text-base mb-1 truncate" title={user.name}>{user.name}</p>
+                  <p className="text-slate-500 break-words">{user.email}</p>
                 </div>
 
                 {/* Shipped To Box */}
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col h-full">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col">
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Shipped To</p>
-                  <p className="font-bold text-slate-900 text-base mb-1">{selectedInvoice.shippingAddress.street}</p>
-                  <p className="text-slate-500">
-                    {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}<br />
-                    {selectedInvoice.shippingAddress.country}
+                  <p className="font-bold text-slate-900 text-base mb-1 truncate" title={selectedInvoice.shippingAddress.street}>{selectedInvoice.shippingAddress.street}</p>
+                  <p className="text-slate-500 line-clamp-2">
+                    {selectedInvoice.shippingAddress.city}, {selectedInvoice.shippingAddress.postalCode}
                   </p>
+                  <p className="text-slate-500">{selectedInvoice.shippingAddress.country}</p>
                 </div>
 
                 {/* Invoice Details Box */}
-                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex flex-col h-full">
+                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex flex-col">
                   <p className="text-xs font-bold text-primary/60 uppercase tracking-wider mb-3">Invoice Details</p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
+                  <div className="space-y-2 mt-auto">
+                    <div className="flex justify-between items-center">
                       <span className="text-slate-500">Invoice No:</span>
-                      <span className="font-bold text-slate-900">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</span>
+                      <span className="font-bold text-slate-900 text-right">{selectedInvoice._id.substring(selectedInvoice._id.length - 8).toUpperCase()}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-slate-500">Date:</span>
-                      <span className="font-bold text-slate-900">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</span>
+                      <span className="font-bold text-slate-900 text-right">{new Date(selectedInvoice.createdAt).toLocaleDateString('en-GB')}</span>
                     </div>
                   </div>
                 </div>
