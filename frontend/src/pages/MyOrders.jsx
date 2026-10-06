@@ -117,7 +117,7 @@ const MyOrders = () => {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-bold text-slate-900 line-clamp-1">{item.name}</h4>
-                          <p className="text-sm text-slate-500 mt-1">Size: {item.size} • Qty: {item.quantity}</p>
+                          <p className="text-sm text-slate-500 mt-1">Size: {item.size} • Qty: {item.qty}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-slate-900">{formatPrice(item.price)}</p>
@@ -140,7 +140,7 @@ const MyOrders = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-500">Subtotal</span>
-                        <span className="font-medium text-slate-900">{formatPrice(order.itemsPrice)}</span>
+                        <span className="font-medium text-slate-900">{formatPrice(order.itemsPrice || 0)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-500">Shipping (Affordable)</span>
