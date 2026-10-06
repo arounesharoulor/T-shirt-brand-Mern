@@ -19,7 +19,7 @@ const MyOrders = () => {
 
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/orders/myorders', {
+        const response = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders/myorders', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
