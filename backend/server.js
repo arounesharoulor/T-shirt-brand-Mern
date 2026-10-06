@@ -36,6 +36,9 @@ app.use(cors({
   credentials: true, // Allow cookies to be sent
 }));
 
+// Trust proxy (required for rate limiting behind Render/Heroku)
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
