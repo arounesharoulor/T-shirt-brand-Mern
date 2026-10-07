@@ -273,69 +273,79 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. HOW IT WORKS */}
-      <section className="py-24 bg-slate-50 relative border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. HOW IT WORKS - EDITORIAL & ANIMATED */}
+      <section className="py-32 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-            className="text-center mb-20"
+            className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8"
           >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">How It Works</h2>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">From concept to delivery in 4 simple steps.</p>
+            <div>
+              <h2 className="text-[3rem] md:text-[5rem] font-display font-black tracking-tighter uppercase leading-none">The Process</h2>
+            </div>
+            <p className="text-slate-400 text-lg max-w-md font-medium leading-relaxed">From raw concept to finished product in four seamless steps. We handle the complexity so you can focus on the art.</p>
           </motion.div>
 
-          <motion.div 
-            variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-4 gap-12 relative"
-          >
-            {/* Connecting line for desktop */}
-            <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-full" />
-            
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-4 relative">
             {steps.map((step, idx) => (
-              <motion.div key={idx} variants={fadeUp} className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-white shadow-xl border-4 border-slate-50 flex items-center justify-center text-3xl font-extrabold text-primary mb-8 relative">
-                  {idx + 1}
-                  <div className="absolute inset-0 border-2 border-primary/20 rounded-full animate-ping" style={{ animationDuration: '3s' }}/>
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">{step.title}</h3>
-                <p className="text-slate-600">{step.desc}</p>
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8, delay: idx * 0.2, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -10 }}
+                className="relative group cursor-crosshair border-l border-white/10 pl-8 pb-12"
+              >
+                <div className="absolute top-0 left-[-1px] w-px h-0 bg-white group-hover:h-full transition-all duration-700 ease-out" />
+                <span className="text-7xl font-display font-black text-white/5 group-hover:text-white/20 transition-colors duration-500 block mb-6">
+                  0{idx + 1}
+                </span>
+                <h3 className="text-2xl font-bold mb-4 tracking-tight">{step.title}</h3>
+                <p className="text-slate-400 leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* 4. TESTIMONIALS */}
-      <section className="py-24 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-            className="text-center mb-16"
+      {/* 4. TESTIMONIALS - MARQUEE / ANIMATED */}
+      <section className="py-32 bg-[#F4F4F4] relative overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 mb-16 text-center">
+          <motion.h2 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            className="text-[3rem] md:text-[5rem] font-display font-black text-slate-900 tracking-tighter uppercase leading-none mb-6"
           >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">Loved by Creators</h2>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">Don't just take our word for it. Hear from our community.</p>
-          </motion.div>
+            Loved By Creators
+          </motion.h2>
+        </div>
 
+        <div className="relative w-full overflow-hidden flex flex-col gap-6 py-4">
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-r from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-l from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
+          
           <motion.div 
-            variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            animate={{ x: [0, -2000] }}
+            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+            className="flex gap-6 w-max"
           >
-            {testimonials.map((test, idx) => (
-              <motion.div key={idx} variants={fadeUp} className="bg-surfaceHighlight rounded-3xl p-10 border border-slate-100 shadow-sm relative">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-accent text-accent" />)}
+            {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((test, idx) => (
+              <div key={idx} className="w-[350px] md:w-[450px] bg-white p-10 border border-slate-200 hover:border-slate-900 transition-colors duration-500 group shadow-sm hover:shadow-xl">
+                <div className="flex gap-1 mb-8">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-slate-900 text-slate-900" />)}
                 </div>
-                <p className="text-slate-700 text-lg italic mb-8">"{test.text}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl">
+                <p className="text-slate-900 text-lg font-medium mb-10 leading-relaxed">"{test.text}"</p>
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-slate-100 flex items-center justify-center text-slate-900 font-bold text-xl font-display uppercase group-hover:bg-slate-900 group-hover:text-white transition-colors duration-500">
                     {test.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900">{test.name}</h4>
-                    <p className="text-sm text-slate-500">{test.role}</p>
+                    <h4 className="font-bold text-slate-900 uppercase tracking-widest text-xs">{test.name}</h4>
+                    <p className="text-xs text-slate-500 uppercase tracking-widest mt-1.5">{test.role}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </motion.div>
         </div>
