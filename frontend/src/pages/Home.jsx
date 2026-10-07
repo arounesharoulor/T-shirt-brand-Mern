@@ -314,39 +314,53 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. TESTIMONIALS - MARQUEE / ANIMATED */}
-      <section className="py-32 bg-[#F4F4F4] relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 mb-16 text-center">
-          <motion.h2 
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="text-[3rem] md:text-[5rem] font-display font-black text-slate-900 tracking-tighter uppercase leading-none mb-6"
-          >
-            Loved By Creators
-          </motion.h2>
+      {/* 4. TESTIMONIALS - BRUTALIST */}
+      <section className="py-32 bg-black relative overflow-hidden text-white font-sans selection:bg-[#E4FE49] selection:text-black">
+        {/* Warning Tape Marquee */}
+        <div className="absolute top-10 left-0 right-0 rotate-3 bg-[#E4FE49] text-black border-y-4 border-black py-2 flex whitespace-nowrap overflow-hidden z-0 opacity-50">
+          <div className="animate-marquee font-black text-2xl uppercase tracking-widest">
+            WARNING: HIGH FREQUENCY APPAREL // WARNING: HIGH FREQUENCY APPAREL // WARNING: HIGH FREQUENCY APPAREL // WARNING: HIGH FREQUENCY APPAREL // 
+          </div>
         </div>
 
-        <div className="relative w-full overflow-hidden flex flex-col gap-6 py-4">
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-r from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-l from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 text-center relative z-10 pt-20">
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            className="inline-block border-4 border-white bg-black px-8 py-4 mb-6"
+          >
+            <h2 className="text-[3rem] md:text-[5rem] font-black tracking-tighter uppercase leading-none">
+              LOVED BY<br/><span className="text-[#E4FE49]">CREATORS.</span>
+            </h2>
+          </motion.div>
+        </div>
+
+        <div className="relative w-full overflow-hidden flex flex-col gap-6 py-4 z-10">
+          {/* Gradient fade borders */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
           
           <motion.div 
             animate={{ x: [0, -2000] }}
-            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-            className="flex gap-6 w-max"
+            transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+            className="flex gap-8 w-max"
           >
             {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((test, idx) => (
-              <div key={idx} className="w-[350px] md:w-[450px] bg-white p-10 border border-slate-200 hover:border-slate-900 transition-colors duration-500 group shadow-sm hover:shadow-xl">
-                <div className="flex gap-1 mb-8">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-slate-900 text-slate-900" />)}
+              <div key={idx} className="w-[380px] md:w-[480px] bg-black p-8 border-4 border-white hover:border-[#E4FE49] hover:-translate-y-2 transition-all duration-300 group relative">
+                {/* Decorative Pin */}
+                <div className="absolute top-4 right-4 w-4 h-4 bg-white rounded-full border-4 border-black group-hover:bg-[#E4FE49] transition-colors" />
+                
+                <div className="flex gap-1 mb-8 text-[#E4FE49]">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-6 h-6 fill-[#E4FE49]" />)}
                 </div>
-                <p className="text-slate-900 text-lg font-medium mb-10 leading-relaxed">"{test.text}"</p>
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 bg-slate-100 flex items-center justify-center text-slate-900 font-bold text-xl font-display uppercase group-hover:bg-slate-900 group-hover:text-white transition-colors duration-500">
+                <p className="text-xl font-bold uppercase tracking-tight mb-10 leading-relaxed">"{test.text}"</p>
+                
+                <div className="flex items-center gap-6 border-t-4 border-white pt-6 group-hover:border-[#E4FE49] transition-colors">
+                  <div className="w-16 h-16 bg-white text-black flex items-center justify-center font-black text-3xl uppercase group-hover:bg-[#E4FE49] transition-colors">
                     {test.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 uppercase tracking-widest text-xs">{test.name}</h4>
-                    <p className="text-xs text-slate-500 uppercase tracking-widest mt-1.5">{test.role}</p>
+                    <h4 className="font-black text-2xl uppercase tracking-tighter">{test.name}</h4>
+                    <p className="font-bold text-sm text-gray-400 uppercase tracking-widest">{test.role}</p>
                   </div>
                 </div>
               </div>
