@@ -17,7 +17,8 @@ const OrderSuccess = () => {
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, [clearCart, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">

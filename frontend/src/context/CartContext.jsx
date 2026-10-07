@@ -54,9 +54,9 @@ export const CartProvider = ({ children }) => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const clearCart = () => {
+  const clearCart = React.useCallback(() => {
     setCartItems([]);
-  };
+  }, []);
 
   return (
     <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, getCartCount, clearCart, isCartOpen, setIsCartOpen }}>
