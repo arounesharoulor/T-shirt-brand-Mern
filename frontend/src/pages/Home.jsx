@@ -190,6 +190,7 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.3 }}
+            style={{ perspective: 1500 }}
             className="relative h-[600px] flex justify-center items-center w-full"
           >
             {/* Main high-end fashion image */}
@@ -197,10 +198,11 @@ const Home = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               style={{ x: img1X, y: img1Y, rotate: img1Rotate }}
-              transition={{ duration: 1, delay: 0.4, type: "spring" }}
-              className="absolute z-10 w-[280px] sm:w-[340px] aspect-[4/5] right-[10%] sm:right-[20%] top-[10%]"
+              whileHover={{ scale: 1.1, rotateX: 15, rotateY: -15, zIndex: 50, boxShadow: "0px 30px 60px rgba(0,0,0,0.3)" }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute z-10 w-[280px] sm:w-[340px] aspect-[4/5] right-[10%] sm:right-[20%] top-[10%] cursor-crosshair"
             >
-              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white relative group cursor-crosshair">
+              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white relative group">
                 <img 
                   src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1600&auto=format&fit=crop" 
                   alt="Streetwear model" 
@@ -215,10 +217,11 @@ const Home = () => {
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
               style={{ x: img2X, y: img2Y, rotate: img2Rotate }}
-              transition={{ duration: 1, delay: 0.6, type: "spring" }}
-              className="absolute z-0 w-[240px] sm:w-[280px] aspect-square left-[5%] sm:left-[10%] bottom-[15%]"
+              whileHover={{ scale: 1.1, rotateX: -15, rotateY: 15, zIndex: 40, boxShadow: "0px 30px 60px rgba(0,0,0,0.3)" }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="absolute z-0 w-[240px] sm:w-[280px] aspect-square left-[5%] sm:left-[10%] bottom-[15%] cursor-crosshair"
             >
-              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-xl border-8 border-white relative group cursor-crosshair">
+              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-xl border-8 border-white relative group">
                 <img 
                   src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1600&auto=format&fit=crop" 
                   alt="Fabric detail" 
@@ -230,8 +233,9 @@ const Home = () => {
             {/* Floating Quality Badge */}
             <motion.div 
               style={{ x: badgeX, y: badgeY }}
-              whileHover={{ scale: 1.05 }}
-              className="absolute bottom-1/4 right-0 lg:-right-4 bg-white/95 backdrop-blur-xl px-6 py-4 rounded-2xl flex items-center gap-4 z-30 shadow-2xl shadow-slate-900/10 border border-slate-100 cursor-default transition-shadow hover:shadow-xl"
+              whileHover={{ scale: 1.15, rotateX: 10, rotateY: -10, zIndex: 60, boxShadow: "0px 20px 40px rgba(0,0,0,0.15)" }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className="absolute bottom-1/4 right-0 lg:-right-4 bg-white/95 backdrop-blur-xl px-6 py-4 rounded-2xl flex items-center gap-4 z-30 shadow-2xl shadow-slate-900/10 border border-slate-100 cursor-pointer"
             >
               <div className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center">
                 <CheckCircle2 className="text-white w-6 h-6" />
