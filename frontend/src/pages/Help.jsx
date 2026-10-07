@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search, HelpCircle, Package, Truck, ArrowRight } from 'lucide-react';
+import { ChevronDown, Search, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const faqs = [
@@ -26,57 +26,71 @@ const Help = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-10 pb-24">
-      {/* Header Banner */}
-      <div className="bg-slate-900 text-white py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <HelpCircle className="w-12 h-12 text-primary mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tight mb-4">
-            How can we help?
-          </h1>
-          <p className="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
-            Search our knowledge base or browse frequently asked questions below.
-          </p>
-          
-          <div className="relative max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input 
-              type="text" 
-              placeholder="Search for answers..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white text-slate-900 font-medium focus:outline-none focus:ring-4 focus:ring-primary/20 transition-shadow text-lg"
-            />
+    <div className="min-h-screen bg-[#F4F4F4] pt-24 pb-32">
+      
+      {/* Editorial Header */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="border-b-2 border-slate-900 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        >
+          <div>
+            <p className="text-sm font-bold tracking-widest uppercase text-slate-500 mb-4">Client Services</p>
+            <h1 className="text-[4rem] md:text-[6rem] font-display font-black text-slate-900 tracking-tighter uppercase leading-[0.9]">
+              How Can<br/>We Help?
+            </h1>
           </div>
-        </div>
+          <div className="w-full md:w-96">
+            <div className="relative">
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-900 w-6 h-6" />
+              <input 
+                type="text" 
+                placeholder="SEARCH KNOWLEDGE BASE" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-0 py-4 bg-transparent border-b-2 border-slate-900 text-slate-900 font-bold placeholder:text-slate-400 focus:outline-none uppercase tracking-wider text-sm transition-colors"
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        {/* Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
-          <Link to="/my-orders" className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group">
-            <Package className="w-8 h-8 text-slate-900 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold text-slate-900 mb-2">Track Order</h3>
-            <p className="text-sm text-slate-500 flex items-center">View order status <ArrowRight className="w-4 h-4 ml-1" /></p>
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
+        
+        {/* Quick Links Sidebar */}
+        <div className="lg:col-span-4 space-y-4">
+          <Link to="/my-orders" className="group block border border-slate-200 bg-white p-8 hover:border-slate-900 transition-colors">
+            <h3 className="font-display font-black text-2xl text-slate-900 uppercase tracking-tight mb-2">Track Order</h3>
+            <p className="text-slate-500 text-sm font-medium mb-6">Monitor your recent purchases.</p>
+            <div className="flex items-center text-sm font-bold tracking-widest uppercase text-slate-900 group-hover:pl-2 transition-all">
+              View Status <ArrowRight className="w-4 h-4 ml-2" />
+            </div>
           </Link>
-          <Link to="/refund" className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group">
-            <Truck className="w-8 h-8 text-slate-900 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold text-slate-900 mb-2">Returns</h3>
-            <p className="text-sm text-slate-500 flex items-center">Start a return <ArrowRight className="w-4 h-4 ml-1" /></p>
+          
+          <Link to="/refund" className="group block border border-slate-200 bg-white p-8 hover:border-slate-900 transition-colors">
+            <h3 className="font-display font-black text-2xl text-slate-900 uppercase tracking-tight mb-2">Returns</h3>
+            <p className="text-slate-500 text-sm font-medium mb-6">Initiate an exchange or refund.</p>
+            <div className="flex items-center text-sm font-bold tracking-widest uppercase text-slate-900 group-hover:pl-2 transition-all">
+              Start Return <ArrowRight className="w-4 h-4 ml-2" />
+            </div>
           </Link>
-          <Link to="/support" className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all group">
-            <HelpCircle className="w-8 h-8 text-slate-900 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold text-slate-900 mb-2">Contact Support</h3>
-            <p className="text-sm text-slate-500 flex items-center">Get in touch <ArrowRight className="w-4 h-4 ml-1" /></p>
+
+          <Link to="/support" className="group block border border-slate-200 bg-white p-8 hover:border-slate-900 transition-colors">
+            <h3 className="font-display font-black text-2xl text-slate-900 uppercase tracking-tight mb-2">Contact</h3>
+            <p className="text-slate-500 text-sm font-medium mb-6">Speak with our service team.</p>
+            <div className="flex items-center text-sm font-bold tracking-widest uppercase text-slate-900 group-hover:pl-2 transition-all">
+              Get in Touch <ArrowRight className="w-4 h-4 ml-2" />
+            </div>
           </Link>
         </div>
 
         {/* FAQs */}
-        <div className="space-y-12">
+        <div className="lg:col-span-8">
           {faqs.map((category, cIdx) => (
-            <div key={cIdx}>
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">{category.category}</h2>
-              <div className="space-y-4">
+            <div key={cIdx} className="mb-16 last:mb-0">
+              <h2 className="text-sm font-bold tracking-widest uppercase text-slate-500 mb-6">{category.category}</h2>
+              <div className="border-t-2 border-slate-900">
                 {category.questions.map((faq, fIdx) => {
                   const id = `${cIdx}-${fIdx}`;
                   const isOpen = openFaq === id;
@@ -86,13 +100,15 @@ const Help = () => {
                   }
 
                   return (
-                    <div key={id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                    <div key={id} className="border-b border-slate-200 group">
                       <button
                         onClick={() => setOpenFaq(isOpen ? null : id)}
-                        className="w-full flex items-center justify-between p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors"
+                        className="w-full flex items-center justify-between py-8 text-left focus:outline-none"
                       >
-                        <span className="font-bold text-slate-900">{faq.q}</span>
-                        <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                        <span className="font-display font-black text-xl md:text-2xl text-slate-900 uppercase tracking-tight pr-8">{faq.q}</span>
+                        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="flex-shrink-0 w-8 h-8 rounded-full border border-slate-900 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                          <ChevronDown className="w-4 h-4" />
+                        </motion.div>
                       </button>
                       <AnimatePresence>
                         {isOpen && (
@@ -102,7 +118,7 @@ const Help = () => {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-100">
+                            <div className="pb-8 text-slate-600 text-lg leading-relaxed max-w-3xl">
                               {faq.a}
                             </div>
                           </motion.div>
