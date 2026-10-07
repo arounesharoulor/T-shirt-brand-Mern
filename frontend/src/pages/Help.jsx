@@ -1,21 +1,22 @@
 import { useState } from 'react';
-import { Plus, Minus, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Search, Package, Truck, MessageSquare, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const faqs = [
   {
     category: 'Orders & Shipping',
     questions: [
-      { q: "How long does standard delivery take?", a: "Standard delivery typically takes 3-5 business days. Express shipping options are available at checkout for 1-2 business day delivery. Custom orders require an additional 48 hours for production." },
-      { q: "Do you ship internationally?", a: "Yes, we ship worldwide. International shipping usually takes 7-14 days depending on the destination country. Customs duties and taxes may apply." },
-      { q: "How can I track my order?", a: "Once your order has been dispatched, you will receive a tracking link via email. You can also monitor your order status in your Account Dashboard." }
+      { q: "How long does delivery take?", a: "Standard delivery takes 3-5 business days. Express delivery takes 1-2 business days. Custom orders may take an additional 48 hours for production." },
+      { q: "Do you ship internationally?", a: "Yes, we ship globally! International shipping usually takes 7-14 days depending on the destination." },
+      { q: "How can I track my order?", a: "Once your order ships, you'll receive a tracking link via email. You can also track it in your Account Dashboard under Order History." }
     ]
   },
   {
-    category: 'Returns & Exchanges',
+    category: 'Returns & Refunds',
     questions: [
-      { q: "What is your return policy?", a: "We offer a 30-day return policy for items in their original, unwashed, and unworn condition. Please note that custom printed items are final sale unless there is a manufacturing defect." },
-      { q: "How do I initiate a return?", a: "You can start a return process through our Returns Portal or by contacting our support team with your order number." }
+      { q: "What is your return policy?", a: "We offer a 30-day return policy for unwashed and unworn items. Custom printed items are final sale unless there is a manufacturing defect." },
+      { q: "How do I start a return?", a: "You can initiate a return through our Support page or by navigating to the Refund Request section." }
     ]
   }
 ];
@@ -23,65 +24,102 @@ const faqs = [
 const Help = () => {
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState(faqs[0].category);
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-32 text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#F5F5F7] pt-28 pb-32 text-[#1D1D1F]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
-        <div className="mb-20 text-center max-w-2xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Help Center
-          </h1>
-          <div className="relative mt-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search for answers..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 bg-gray-50 border border-gray-200 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-gray-900 transition-shadow"
-            />
+        {/* Header Bento Box */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-[2.5rem] p-10 md:p-16 mb-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center relative overflow-hidden"
+        >
+          {/* Subtle Background Glows */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none rounded-[2.5rem]">
+            <div className="absolute -top-1/2 -left-1/4 w-[80%] h-[150%] bg-blue-50/50 rounded-full blur-3xl" />
+            <div className="absolute -bottom-1/2 -right-1/4 w-[80%] h-[150%] bg-purple-50/50 rounded-full blur-3xl" />
           </div>
-        </div>
 
-        <div className="flex flex-col lg:flex-row gap-16">
-          
-          {/* Sidebar */}
-          <div className="lg:w-1/3">
-            <div className="sticky top-32">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Categories</h3>
-              <nav className="space-y-2">
-                {faqs.map((cat, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveCategory(cat.category)}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium rounded-md transition-colors ${activeCategory === cat.category ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
-                  >
-                    {cat.category}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="mt-12 p-6 bg-gray-50 rounded-lg border border-gray-100">
-                <h4 className="font-bold text-gray-900 mb-2">Need more help?</h4>
-                <p className="text-sm text-gray-500 mb-4">Our support team is available to assist you with any inquiries.</p>
-                <Link to="/support" className="inline-block text-sm font-semibold text-gray-900 underline hover:text-gray-600">
-                  Contact Support
-                </Link>
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+              How can we help?
+            </h1>
+            <div className="relative group max-w-xl mx-auto mt-10">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
               </div>
+              <input 
+                type="text" 
+                placeholder="Search for answers..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-14 pr-6 py-5 bg-gray-50 border-0 rounded-2xl text-lg focus:ring-4 focus:ring-blue-500/10 focus:bg-white transition-all outline-none text-gray-900 placeholder:text-gray-400"
+              />
             </div>
           </div>
+        </motion.div>
 
-          {/* FAQ Content */}
-          <div className="lg:w-2/3">
-            {faqs.filter(c => c.category === activeCategory).map((category, cIdx) => (
+        {/* Action Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Link to="/my-orders" className="block h-full bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Package className="w-7 h-7 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Track Order</h3>
+              <p className="text-gray-500 mb-8">Check the status of your recent purchases and shipments.</p>
+              <div className="flex items-center text-blue-600 font-semibold">
+                View Orders <ArrowUpRight className="w-4 h-4 ml-1" />
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <Link to="/refund" className="block h-full bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Truck className="w-7 h-7 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Returns</h3>
+              <p className="text-gray-500 mb-8">Not quite right? Easily initiate a return or exchange.</p>
+              <div className="flex items-center text-purple-600 font-semibold">
+                Start Return <ArrowUpRight className="w-4 h-4 ml-1" />
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Link to="/support" className="block h-full bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-orange-50 rounded-full blur-2xl z-0" />
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <MessageSquare className="w-7 h-7 text-orange-600" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Contact Us</h3>
+                <p className="text-gray-500 mb-8">Need more help? Our team is available 24/7 to assist you.</p>
+                <div className="flex items-center text-orange-600 font-semibold">
+                  Get in Touch <ArrowUpRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* FAQs Bento Box */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+        >
+          <h2 className="text-3xl font-bold mb-10 text-center">Frequently Asked Questions</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
+            {faqs.map((category, cIdx) => (
               <div key={cIdx}>
-                <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-200">{category.category}</h2>
-                <div className="space-y-6">
+                <h3 className="text-xl font-semibold mb-6 text-gray-400 uppercase tracking-wider text-sm">{category.category}</h3>
+                <div className="space-y-4">
                   {category.questions.map((faq, fIdx) => {
-                    const id = `${category.category}-${fIdx}`;
+                    const id = `${cIdx}-${fIdx}`;
                     const isOpen = openFaq === id;
                     
                     if (searchQuery && !faq.q.toLowerCase().includes(searchQuery.toLowerCase()) && !faq.a.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -89,22 +127,33 @@ const Help = () => {
                     }
 
                     return (
-                      <div key={id} className="border-b border-gray-100 pb-6">
+                      <div key={id} className="bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300">
                         <button
                           onClick={() => setOpenFaq(isOpen ? null : id)}
-                          className="w-full flex items-start justify-between text-left focus:outline-none group"
+                          className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
                         >
-                          <span className="font-semibold text-gray-900 pr-8 group-hover:text-gray-600 transition-colors">{faq.q}</span>
-                          <span className="flex-shrink-0 mt-1 text-gray-400">
-                            {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                          </span>
+                          <span className="font-semibold text-gray-900 pr-6 text-lg">{faq.q}</span>
+                          <motion.div 
+                            animate={{ rotate: isOpen ? 180 : 0 }} 
+                            className="flex-shrink-0 w-8 h-8 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-500"
+                          >
+                            <ChevronDown className="w-5 h-5" />
+                          </motion.div>
                         </button>
-                        
-                        <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
-                          <p className="text-gray-600 leading-relaxed text-sm">
-                            {faq.a}
-                          </p>
-                        </div>
+                        <AnimatePresence>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-6 pb-6 text-gray-600 leading-relaxed">
+                                {faq.a}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     );
                   })}
@@ -112,8 +161,8 @@ const Help = () => {
               </div>
             ))}
           </div>
-
-        </div>
+        </motion.div>
+        
       </div>
     </div>
   );

@@ -314,39 +314,44 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. TESTIMONIALS - CLEAN E-COMMERCE */}
-      <section className="py-24 bg-white relative border-t border-gray-100">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-4">
-              Loved by Creators
-            </h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-              See what our community has to say about our premium blanks and print quality.
-            </p>
-          </div>
+      {/* 4. TESTIMONIALS - MARQUEE / ANIMATED */}
+      <section className="py-32 bg-[#F4F4F4] relative overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 mb-16 text-center">
+          <motion.h2 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            className="text-[3rem] md:text-[5rem] font-display font-black text-slate-900 tracking-tighter uppercase leading-none mb-6"
+          >
+            Loved By Creators
+          </motion.h2>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((test, idx) => (
-              <div key={idx} className="bg-gray-50 p-8 rounded-2xl border border-gray-100">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-gray-900 text-gray-900" />)}
+        <div className="relative w-full overflow-hidden flex flex-col gap-6 py-4">
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-r from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-48 bg-gradient-to-l from-[#F4F4F4] to-transparent z-10 pointer-events-none" />
+          
+          <motion.div 
+            animate={{ x: [0, -2000] }}
+            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+            className="flex gap-6 w-max"
+          >
+            {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((test, idx) => (
+              <div key={idx} className="w-[350px] md:w-[450px] bg-white p-10 border border-slate-200 hover:border-slate-900 transition-colors duration-500 group shadow-sm hover:shadow-xl">
+                <div className="flex gap-1 mb-8">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-slate-900 text-slate-900" />)}
                 </div>
-                <p className="text-gray-900 text-base leading-relaxed mb-8">
-                  "{test.text}"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-900 font-semibold text-lg">
+                <p className="text-slate-900 text-lg font-medium mb-10 leading-relaxed">"{test.text}"</p>
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-slate-100 flex items-center justify-center text-slate-900 font-bold text-xl font-display uppercase group-hover:bg-slate-900 group-hover:text-white transition-colors duration-500">
                     {test.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 text-sm">{test.name}</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">{test.role}</p>
+                    <h4 className="font-bold text-slate-900 uppercase tracking-widest text-xs">{test.name}</h4>
+                    <p className="text-xs text-slate-500 uppercase tracking-widest mt-1.5">{test.role}</p>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
