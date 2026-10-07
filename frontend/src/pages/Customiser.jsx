@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Canvas, IText, FabricImage } from 'fabric';
-import { Type, Image as ImageIcon, ShoppingBag, Trash2, Palette, Sparkles, ArrowLeft } from 'lucide-react';
+import { Type, Image as ImageIcon, ShoppingBag, Trash2, Ruler, Sparkles, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { COLORS } from '../data/products';
@@ -29,7 +29,7 @@ const Customiser = () => {
 
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
-  const [tshirtColor, setTshirtColor] = useState(passedColor);
+  const [selectedSize, setSelectedSize] = useState('M');
   const [activeTab, setActiveTab] = useState('text');
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const Customiser = () => {
       left: 50,
       top: 50,
       fontFamily: 'Inter',
-      fill: tshirtColor.name === 'Black' ? '#ffffff' : '#000000',
+      fill: passedColor && passedColor.name === 'Black' ? '#ffffff' : '#000000',
       fontSize: 30,
       fontWeight: 'bold',
     });
@@ -138,23 +138,23 @@ const Customiser = () => {
             transition={{ delay: 0.1 }}
             className="w-full lg:w-1/3 flex flex-col gap-6"
           >
-            {/* Color Picker Card */}
+            {/* Size Picker Card */}
             <div className="bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6 flex items-center gap-2">
-                <Palette className="w-4 h-4" />
-                Base Color
+                <Ruler className="w-4 h-4" />
+                Select Size
               </h3>
               <div className="flex flex-wrap gap-4">
-                {COLORS.map((color) => (
+                {['S', 'M', 'L', 'XL'].map((size) => (
                   <button
-                    key={color.name}
-                    onClick={() => setTshirtColor(color)}
-                    className={`w-14 h-14 rounded-full transition-all border shadow-sm ${
-                      tshirtColor.name === color.name ? 'ring-4 ring-slate-900 ring-offset-4 scale-110 border-transparent' : 'ring-1 ring-transparent hover:ring-slate-300 border-slate-200 hover:scale-105'
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`w-14 h-14 rounded-full transition-all border shadow-sm flex items-center justify-center font-bold text-lg ${
+                      selectedSize === size ? 'ring-4 ring-slate-900 ring-offset-4 scale-110 border-transparent bg-slate-900 text-white' : 'ring-1 ring-transparent hover:ring-slate-300 border-slate-200 hover:scale-105 bg-white text-slate-900'
                     }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  />
+                  >
+                    {size}
+                  </button>
                 ))}
               </div>
             </div>
@@ -216,11 +216,11 @@ const Customiser = () => {
                 className="absolute inset-0 w-full h-full object-cover object-center"
               />
               
-              {/* Color Overlay */}
-              {tshirtColor.name !== 'White' && (
+              {/* Color Overlay (keeps the color passed from product page) */}
+              {passedColor && passedColor.name !== 'White' && (
                 <div 
                   className="absolute inset-0 mix-blend-multiply opacity-60 pointer-events-none transition-colors duration-500"
-                  style={{ backgroundColor: tshirtColor.hex }}
+                  style={{ backgroundColor: passedColor.hex }}
                 />
               )}
 

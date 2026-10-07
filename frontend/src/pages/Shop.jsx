@@ -52,7 +52,7 @@ const Shop = () => {
       {/* 1. High-End Shop Banner */}
       <div className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-slate-900 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558222218-b7b54eede3f3?q=80&w=2787&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay grayscale" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558222218-b7b54eede3f3?q=80&w=2787&auto=format&fit=crop')] bg-cover bg-top opacity-30 mix-blend-overlay grayscale" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
         </div>
         

@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { UploadCloud, CheckCircle, ShieldAlert, ArrowLeft } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const RefundRequest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const passedOrderInfo = location.state || {};
+
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    orderNumber: '',
-    email: '',
+    orderNumber: passedOrderInfo.orderId || '',
+    email: passedOrderInfo.email || '',
     reason: 'damage',
     description: ''
   });

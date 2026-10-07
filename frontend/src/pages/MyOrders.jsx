@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, Truck, ArrowLeft, Clock, CheckCircle2, Shirt } from 'lucide-react';
+import { Package, Truck, ArrowLeft, Clock, CheckCircle2, Shirt, XCircle, RotateCcw, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -11,6 +12,13 @@ const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+
+  // Cancel Modal State
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
+  const [cancelReason, setCancelReason] = useState('not_needed');
+  const [cancelPhoto, setCancelPhoto] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -39,11 +47,65 @@ const MyOrders = () => {
     fetchOrders();
   }, [user, navigate]);
 
+  const handleCancelClick = (orderId) => {
+    setOrderToCancel(orderId);
+    setCancelReason('not_needed');
+    setCancelPhoto(null);
+    setCancelModalOpen(true);
+  };
+
+  const submitCancelOrder = async () => {
+    if ((cancelReason === 'damage' || cancelReason === 'wrong_item') && !cancelPhoto) {
+      alert('Please upload photo evidence for damaged or wrong items.');
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      const response = await fetch(`https://t-shirt-brand-mern.onrender.com/api/orders/${orderToCancel}/cancel`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setOrders(orders.map(o => o._id === orderToCancel ? { ...o, isCancelled: true } : o));
+        setCancelModalOpen(false);
+      } else {
+        alert(data.error || 'Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const getDeliveryDate = (orderDate) => {
     const date = new Date(orderDate);
     date.setDate(date.getDate() + 4); // Estimated 4 days delivery
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
+
+  const groupedOrders = useMemo(() => {
+    // Ensure orders are sorted newest first
+    const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    const groups = [];
+    sortedOrders.forEach(order => {
+      const date = new Date(order.createdAt);
+      const monthYear = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      
+      let group = groups.find(g => g.name === monthYear);
+      if (!group) {
+        group = { name: monthYear, items: [] };
+        groups.push(group);
+      }
+      group.items.push(order);
+    });
+    return groups;
+  }, [orders]);
 
   const generateInvoice = (order) => {
     const invoiceWindow = window.open('', '_blank');
@@ -186,114 +248,147 @@ const MyOrders = () => {
           </div>
         ) : (
           <div className="space-y-12">
-            {orders.map((order) => (
-              <div key={order._id} className="border border-gray-200 rounded-lg overflow-hidden">
-                
-                {/* Minimal Header */}
-                <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-wrap justify-between items-center gap-4 text-sm">
-                  <div className="flex gap-8">
-                    <div>
-                      <p className="text-gray-500 mb-1">Order Placed</p>
-                      <p className="font-medium text-gray-900">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 mb-1">Total</p>
-                      <p className="font-medium text-gray-900">{formatPrice(order.totalPrice)}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-gray-500 mb-1">Order # {order._id.substring(order._id.length - 10).toUpperCase()}</p>
-                    <button 
-                      onClick={() => setSelectedInvoice(order)} 
-                      className="text-blue-600 hover:underline font-medium"
-                    >
-                      View Invoice
-                    </button>
-                  </div>
-                </div>
-
-                {/* Status Bar */}
-                <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-                  {order.isDelivered ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      <span className="font-bold text-green-700">Delivered on {new Date(order.deliveredAt).toLocaleDateString()}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Truck className="w-5 h-5 text-black" />
-                      <span className="font-bold text-black">
-                        Arriving by {getDeliveryDate(order.createdAt)}
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                {/* Items List */}
-                <div className="px-6 py-6 space-y-6">
-                  {order.orderItems.map((item, idx) => (
-                    <div key={idx} className="flex gap-6">
-                      <div className="w-24 h-32 bg-gray-50 border border-gray-100 shrink-0">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-full h-full object-cover mix-blend-multiply" 
-                        />
-                      </div>
-                      <div className="flex-1 flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg mb-1">{item.name}</h4>
-                          <p className="text-gray-500 text-sm mb-1">Size: {item.size}</p>
-                          <p className="text-gray-500 text-sm">Qty: {item.qty || item.quantity || 1}</p>
+            {groupedOrders.map((group) => (
+              <div key={group.name} className="space-y-6">
+                <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">{group.name}</h3>
+                <div className="space-y-12">
+                  {group.items.map((order) => (
+                    <div key={order._id} className="border border-gray-200 rounded-lg overflow-hidden">
+                      
+                      {/* Minimal Header */}
+                      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-wrap justify-between items-center gap-4 text-sm">
+                        <div className="flex gap-8">
+                          <div>
+                            <p className="text-gray-500 mb-1">Order Placed</p>
+                            <p className="font-medium text-gray-900">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 mb-1">Total</p>
+                            <p className="font-medium text-gray-900">{formatPrice(order.totalPrice)}</p>
+                          </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-900">{formatPrice(item.price)}</p>
+                          <p className="text-gray-500 mb-1">Order # {order._id.substring(order._id.length - 10).toUpperCase()}</p>
+                          <button 
+                            onClick={() => setSelectedInvoice(order)} 
+                            className="text-blue-600 hover:underline font-medium"
+                          >
+                            View Invoice
+                          </button>
                         </div>
                       </div>
+
+                      {/* Status Bar */}
+                      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {order.isCancelled ? (
+                            <>
+                              <XCircle className="w-5 h-5 text-red-600" />
+                              <span className="font-bold text-red-700">Cancelled</span>
+                            </>
+                          ) : order.isReturned ? (
+                            <>
+                              <RotateCcw className="w-5 h-5 text-orange-600" />
+                              <span className="font-bold text-orange-700">Returned</span>
+                            </>
+                          ) : order.isDelivered ? (
+                            <>
+                              <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              <span className="font-bold text-green-700">Delivered on {order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'N/A'}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Truck className="w-5 h-5 text-black" />
+                              <span className="font-bold text-black">
+                                Arriving by {getDeliveryDate(order.createdAt)}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        <div>
+                          {!order.isCancelled && !order.isDelivered && (
+                            <button onClick={() => handleCancelClick(order._id)} className="text-red-600 hover:text-red-800 text-sm font-bold bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors">
+                              Cancel Order
+                            </button>
+                          )}
+                          {order.isDelivered && !order.isReturned && !order.isCancelled && (
+                            <button onClick={() => navigate('/refund', { state: { orderId: order._id, email: user.email } })} className="text-orange-600 hover:text-orange-800 text-sm font-bold bg-orange-50 hover:bg-orange-100 px-4 py-2 rounded-lg transition-colors">
+                              Return Order
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Items List */}
+                      <div className="px-6 py-6 space-y-6">
+                        {order.orderItems.map((item, idx) => (
+                          <div key={idx} className="flex gap-6">
+                            <div className="w-24 h-32 bg-gray-50 border border-gray-100 shrink-0">
+                              <img 
+                                src={item.image} 
+                                alt={item.name} 
+                                className="w-full h-full object-cover mix-blend-multiply" 
+                              />
+                            </div>
+                            <div className="flex-1 flex justify-between">
+                              <div>
+                                <h4 className="font-bold text-gray-900 text-lg mb-1">{item.name}</h4>
+                                <p className="text-gray-500 text-sm mb-1">Size: {item.size}</p>
+                                <p className="text-gray-500 text-sm">Qty: {item.qty || item.quantity || 1}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-gray-900">{formatPrice(item.price)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer details (Shipping & Summary side-by-side) */}
+                      <div className="bg-gray-50 px-6 py-6 border-t border-gray-200">
+                        <div className="flex flex-col md:flex-row justify-between gap-8">
+                          
+                          {/* Shipping Address */}
+                          <div className="flex-1 max-w-xs">
+                            <h4 className="font-bold text-gray-900 text-sm mb-3">Shipping Address</h4>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                              {order.shippingAddress.street}<br />
+                              {order.shippingAddress.city}, {order.shippingAddress.postalCode}<br />
+                              {order.shippingAddress.country}
+                            </p>
+                          </div>
+
+                          {/* Order Summary */}
+                          <div className="w-full md:w-72">
+                            <h4 className="font-bold text-gray-900 text-sm mb-3">Order Summary</h4>
+                            <div className="space-y-2 text-sm text-gray-600">
+                              <div className="flex justify-between">
+                                <span>Item(s) Subtotal:</span>
+                                <span className="text-gray-900">{formatPrice(order.itemsPrice || 0)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Shipping:</span>
+                                <span className="text-gray-900">{order.shippingPrice === 0 ? 'Free' : formatPrice(order.shippingPrice)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Tax:</span>
+                                <span className="text-gray-900">{formatPrice(order.taxPrice)}</span>
+                              </div>
+                              <div className="flex justify-between font-bold text-gray-900 text-base pt-3 border-t border-gray-200 mt-2">
+                                <span>Grand Total:</span>
+                                <span>{formatPrice(order.totalPrice)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+
                     </div>
                   ))}
                 </div>
-
-                {/* Footer details (Shipping & Summary side-by-side) */}
-                <div className="bg-gray-50 px-6 py-6 border-t border-gray-200">
-                  <div className="flex flex-col md:flex-row justify-between gap-8">
-                    
-                    {/* Shipping Address */}
-                    <div className="flex-1 max-w-xs">
-                      <h4 className="font-bold text-gray-900 text-sm mb-3">Shipping Address</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {order.shippingAddress.street}<br />
-                        {order.shippingAddress.city}, {order.shippingAddress.postalCode}<br />
-                        {order.shippingAddress.country}
-                      </p>
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="w-full md:w-72">
-                      <h4 className="font-bold text-gray-900 text-sm mb-3">Order Summary</h4>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex justify-between">
-                          <span>Item(s) Subtotal:</span>
-                          <span className="text-gray-900">{formatPrice(order.itemsPrice || 0)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Shipping:</span>
-                          <span className="text-gray-900">{order.shippingPrice === 0 ? 'Free' : formatPrice(order.shippingPrice)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Tax:</span>
-                          <span className="text-gray-900">{formatPrice(order.taxPrice)}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-gray-900 text-base pt-3 border-t border-gray-200 mt-2">
-                          <span>Grand Total:</span>
-                          <span>{formatPrice(order.totalPrice)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-
               </div>
             ))}
           </div>
@@ -440,6 +535,113 @@ const MyOrders = () => {
           </div>
         </div>
       )}
+
+      {/* Cancel Order Modal */}
+      <AnimatePresence>
+        {cancelModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              onClick={() => setCancelModalOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-8 max-w-md w-full shadow-[0_0_40px_rgba(0,0,0,0.1)] relative overflow-hidden"
+            >
+              {/* AI Decorative Glows */}
+              <div className="absolute -top-20 -right-20 w-48 h-48 bg-blue-500/20 blur-[50px] rounded-full pointer-events-none" />
+              <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-purple-500/20 blur-[50px] rounded-full pointer-events-none" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-gradient-to-tr from-blue-600 to-violet-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Cancel Order</h2>
+                </div>
+                <p className="text-slate-500 mb-8 text-sm pl-14">Please tell us why you are cancelling this order.</p>
+
+                <div className="space-y-6 mb-8">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Reason for Cancellation</label>
+                    <div className="relative">
+                      <select 
+                        value={cancelReason} 
+                        onChange={(e) => setCancelReason(e.target.value)}
+                        className="w-full px-4 py-3.5 bg-white/80 border border-slate-200/80 rounded-xl focus:bg-white focus:ring-2 focus:ring-violet-500/50 outline-none font-medium text-slate-700 shadow-sm appearance-none transition-all"
+                      >
+                        <option value="not_needed">Item no longer needed</option>
+                        <option value="ordered_by_mistake">Ordered by mistake</option>
+                        <option value="found_better_price">Found a better price elsewhere</option>
+                        <option value="damage">Received damaged / defective item</option>
+                        <option value="wrong_item">Received wrong item</option>
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {(cancelReason === 'damage' || cancelReason === 'wrong_item') && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-2">
+                          <label className="block text-sm font-bold text-slate-700 mb-2">Upload Photo Evidence</label>
+                          <div className="relative border-2 border-dashed border-violet-200 bg-violet-50/50 rounded-xl p-6 hover:bg-violet-50 hover:border-violet-300 transition-colors text-center cursor-pointer group">
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => setCancelPhoto(e.target.files[0])} 
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                            />
+                            <div className="flex flex-col items-center pointer-events-none">
+                              {cancelPhoto ? (
+                                <span className="font-bold text-violet-700 text-sm truncate max-w-[200px]">{cancelPhoto.name}</span>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-6 h-6 text-violet-400 mb-2 group-hover:text-violet-500 transition-colors" />
+                                  <span className="text-sm font-bold text-violet-600">Tap to upload image</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setCancelModalOpen(false)} 
+                    className="flex-1 py-3.5 text-slate-600 font-bold bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                  >
+                    Go Back
+                  </button>
+                  <button 
+                    onClick={submitCancelOrder} 
+                    disabled={isCancelling}
+                    className="flex-1 py-3.5 text-white font-bold bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 rounded-xl transition-all shadow-lg shadow-red-500/25 disabled:opacity-50"
+                  >
+                    {isCancelling ? 'Submitting...' : 'Confirm Cancel'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       
       {/* Required CSS to hide everything else when printing the modal */}
       <style>{`

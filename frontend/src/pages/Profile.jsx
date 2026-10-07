@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -26,6 +26,65 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: ''
   });
+
+  const [orders, setOrders] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfileData = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const headers = {
+            'Authorization': `Bearer ${token}`
+          };
+          
+          // Fetch Orders
+          const ordersRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders/myorders', { headers });
+          const ordersData = await ordersRes.json();
+          if (ordersData.success) {
+            setOrders(ordersData.data);
+          }
+          setLoadingOrders(false);
+
+          // Fetch User Addresses
+          const userRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/auth/me', { headers });
+          const userData = await userRes.json();
+          if (userData.success && userData.data.addresses) {
+            setAddresses(userData.data.addresses);
+          }
+          setLoadingAddresses(false);
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+          setLoadingOrders(false);
+          setLoadingAddresses(false);
+        }
+      };
+
+      fetchProfileData();
+    }
+  }, [user]);
+
+  const groupedOrders = useMemo(() => {
+    // Ensure orders are sorted newest first
+    const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    const groups = [];
+    sortedOrders.forEach(order => {
+      const date = new Date(order.createdAt);
+      const monthYear = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      
+      let group = groups.find(g => g.name === monthYear);
+      if (!group) {
+        group = { name: monthYear, items: [] };
+        groups.push(group);
+      }
+      group.items.push(order);
+    });
+    return groups;
+  }, [orders]);
 
   const handleProfileChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handlePasswordChange = (e) => setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
@@ -130,7 +189,13 @@ const Profile = () => {
                 {tabs.map(tab => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      if (tab.id === 'orders') {
+                        navigate('/my-orders');
+                      } else {
+                        setActiveTab(tab.id);
+                      }
+                    }}
                     className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all ${
                       activeTab === tab.id 
                         ? 'bg-slate-900 text-white shadow-md' 
@@ -246,36 +311,56 @@ const Profile = () => {
                 </motion.div>
               )}
 
-              {/* EMPTY STATES FOR OTHER TABS */}
-              {(activeTab === 'orders' || activeTab === 'addresses') && (
+
+
+              {/* ADDRESSES TAB */}
+              {activeTab === 'addresses' && (
                 <motion.div
-                  key={activeTab}
+                  key="addresses"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-white rounded-3xl p-16 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-[500px]"
+                  className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-slate-100"
                 >
-                  <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                    {activeTab === 'orders' ? (
-                      <Package className="w-10 h-10 text-slate-300" />
-                    ) : (
-                      <MapPin className="w-10 h-10 text-slate-300" />
-                    )}
+                  <div className="mb-8 border-b border-slate-100 pb-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Saved Addresses</h2>
+                    <p className="text-slate-500 mt-2">Manage your shipping addresses for faster checkout.</p>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
-                    {activeTab === 'orders' ? 'No orders yet' : 'No saved addresses'}
-                  </h3>
-                  <p className="text-slate-500 max-w-md">
-                    {activeTab === 'orders' 
-                      ? 'When you place an order, it will appear here so you can easily track its status.' 
-                      : 'Save your shipping addresses here for a faster checkout experience.'}
-                  </p>
                   
-                  {activeTab === 'orders' && (
-                    <button onClick={() => navigate('/shop')} className="mt-8 px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">
-                      Start Shopping
-                    </button>
+                  {loadingAddresses ? (
+                    <div className="flex justify-center items-center h-48">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+                    </div>
+                  ) : addresses.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center py-12">
+                      <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                        <MapPin className="w-10 h-10 text-slate-300" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">No saved addresses</h3>
+                      <p className="text-slate-500 max-w-md">Save your shipping addresses here for a faster checkout experience.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {addresses.map((addr, idx) => (
+                        <div key={idx} className="border border-slate-200 rounded-2xl p-6 relative group hover:border-slate-300 transition-colors">
+                          {addr.isDefault && (
+                            <span className="absolute top-4 right-4 bg-slate-900 text-white text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded">Default</span>
+                          )}
+                          <div className="flex items-start gap-3 mb-3">
+                            <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
+                            <div>
+                              <p className="font-bold text-slate-900">{user.name}</p>
+                              <p className="text-slate-600 text-sm mt-1 leading-relaxed">
+                                {addr.street}<br />
+                                {addr.city}{addr.state ? `, ${addr.state}` : ''} {addr.zipCode}<br />
+                                {addr.country}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </motion.div>
               )}

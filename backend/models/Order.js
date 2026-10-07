@@ -80,6 +80,14 @@ const OrderSchema = new mongoose.Schema({
   deliveredAt: {
     type: Date,
   },
+  isCancelled: {
+    type: Boolean,
+    default: false,
+  },
+  isReturned: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true
 });

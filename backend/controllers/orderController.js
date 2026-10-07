@@ -32,6 +32,30 @@ exports.addOrderItems = async (req, res, next) => {
 
       const createdOrder = await order.save();
 
+      // Add address to user profile if it doesn't exist
+      const User = require('../models/User');
+      const user = await User.findById(req.user._id);
+      
+      if (user && shippingAddress) {
+        const addressExists = user.addresses.some(
+          (addr) =>
+            addr.street === shippingAddress.street &&
+            addr.city === shippingAddress.city &&
+            addr.zipCode === shippingAddress.postalCode &&
+            addr.country === shippingAddress.country
+        );
+
+        if (!addressExists) {
+          user.addresses.push({
+            street: shippingAddress.street,
+            city: shippingAddress.city,
+            zipCode: shippingAddress.postalCode,
+            country: shippingAddress.country,
+          });
+          await user.save();
+        }
+      }
+
       res.status(201).json({
         success: true,
         data: createdOrder
@@ -124,6 +148,68 @@ exports.getOrders = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: orders
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Cancel order
+// @route   PUT /api/orders/:id/cancel
+// @access  Private
+exports.cancelOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    if (order.isDelivered) {
+      return res.status(400).json({ success: false, error: 'Cannot cancel a delivered order' });
+    }
+
+    order.isCancelled = true;
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedOrder
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Return order
+// @route   PUT /api/orders/:id/return
+// @access  Private
+exports.returnOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    if (!order.isDelivered) {
+      return res.status(400).json({ success: false, error: 'Can only return delivered orders' });
+    }
+
+    order.isReturned = true;
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedOrder
     });
   } catch (error) {
     next(error);

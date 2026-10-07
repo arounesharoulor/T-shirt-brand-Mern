@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Palette, Truck, ShieldCheck, Zap, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,40 @@ import { useAuth } from '../context/AuthContext';
 const Home = () => {
   const { user } = useAuth();
   
+  // Mouse Parallax Setup
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const x = (clientX / innerWidth) * 2 - 1;
+    const y = (clientY / innerHeight) * 2 - 1;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const bgX1 = useTransform(smoothX, [-1, 1], [-40, 40]);
+  const bgY1 = useTransform(smoothY, [-1, 1], [-40, 40]);
+  
+  const bgX2 = useTransform(smoothX, [-1, 1], [60, -60]);
+  const bgY2 = useTransform(smoothY, [-1, 1], [60, -60]);
+
+  const img1X = useTransform(smoothX, [-1, 1], [-25, 25]);
+  const img1Y = useTransform(smoothY, [-1, 1], [-25, 25]);
+  const img1Rotate = useTransform(smoothX, [-1, 1], [-6, -2]);
+
+  const img2X = useTransform(smoothX, [-1, 1], [35, -35]);
+  const img2Y = useTransform(smoothY, [-1, 1], [35, -35]);
+  const img2Rotate = useTransform(smoothX, [-1, 1], [4, 8]);
+
+  const badgeX = useTransform(smoothX, [-1, 1], [15, -15]);
+  const badgeY = useTransform(smoothY, [-1, 1], [15, -15]);
+
   // Animation Variants
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
@@ -60,10 +94,19 @@ const Home = () => {
     <div className="flex flex-col bg-background selection:bg-slate-900 selection:text-white overflow-hidden">
       
       {/* 1. HERO SECTION - REDESIGNED */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]">
+      <section 
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]"
+        onMouseMove={handleMouseMove}
+      >
         {/* Abstract Background Elements */}
-        <div className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-blue-100 rounded-full blur-[150px] -z-10 translate-x-1/3 -translate-y-1/3 opacity-70" />
-        <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] bg-pink-100 rounded-full blur-[120px] -z-10 -translate-x-1/3 translate-y-1/3 opacity-70" />
+        <motion.div 
+          style={{ x: bgX1, y: bgY1 }}
+          className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-blue-100 rounded-full blur-[150px] -z-10 translate-x-1/3 -translate-y-1/3 opacity-70" 
+        />
+        <motion.div 
+          style={{ x: bgX2, y: bgY2 }}
+          className="absolute bottom-0 left-0 w-[50vw] h-[50vw] bg-pink-100 rounded-full blur-[120px] -z-10 -translate-x-1/3 translate-y-1/3 opacity-70" 
+        />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center pt-24 pb-12">
           
@@ -73,21 +116,43 @@ const Home = () => {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-center lg:text-left z-20"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-slate-200 text-sm font-bold text-slate-800 mb-8 tracking-wide">
-              <Sparkles className="w-4 h-4 text-blue-600" /> 
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, type: "spring", bounce: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-slate-200 text-sm font-bold text-slate-800 mb-8 tracking-wide cursor-default hover:shadow-md transition-all"
+            >
+              <motion.div
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              >
+                <Sparkles className="w-4 h-4 text-blue-600" /> 
+              </motion.div>
               Next-Gen Fashion Studio
-            </div>
+            </motion.div>
             
             <h1 className="text-5xl sm:text-7xl font-display font-black leading-[1.05] mb-8 text-slate-900 tracking-tight">
               Ready to wear your <br className="hidden xl:block" />
-              <span className="relative">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              <motion.span 
+                className="relative inline-block cursor-crosshair group"
+                whileHover="hover"
+              >
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 group-hover:from-blue-600 group-hover:to-indigo-600 transition-all duration-300">
                   masterpiece?
                 </span>
-                <svg className="absolute -bottom-3 left-0 w-full h-4 text-blue-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round"/>
-                </svg>
-              </span>
+                <motion.svg 
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 1.5, delay: 1, ease: "easeInOut" }}
+                  className="absolute -bottom-3 left-0 w-full h-4 text-slate-200 group-hover:text-blue-200 transition-colors duration-300 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"
+                >
+                  <motion.path 
+                    variants={{ hover: { pathLength: [1, 0, 1], transition: { duration: 0.8, ease: "easeInOut" } } }}
+                    d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round"
+                  />
+                </motion.svg>
+              </motion.span>
             </h1>
             
             <p className="text-xl text-slate-600 mb-10 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
@@ -129,38 +194,44 @@ const Home = () => {
           >
             {/* Main high-end fashion image */}
             <motion.div
-              initial={{ opacity: 0, y: 40, rotate: -4 }}
-              animate={{ opacity: 1, y: 0, rotate: -4 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ x: img1X, y: img1Y, rotate: img1Rotate }}
               transition={{ duration: 1, delay: 0.4, type: "spring" }}
-              className="absolute z-10 w-[280px] sm:w-[340px] aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white right-[10%] sm:right-[20%] top-[10%]"
+              className="absolute z-10 w-[280px] sm:w-[340px] aspect-[4/5] right-[10%] sm:right-[20%] top-[10%]"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1600&auto=format&fit=crop" 
-                alt="Streetwear model" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/10" />
+              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white relative group cursor-crosshair">
+                <img 
+                  src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1600&auto=format&fit=crop" 
+                  alt="Streetwear model" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+              </div>
             </motion.div>
 
             {/* Secondary image for depth */}
             <motion.div
-              initial={{ opacity: 0, y: 60, rotate: 6 }}
-              animate={{ opacity: 1, y: 0, rotate: 6 }}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ x: img2X, y: img2Y, rotate: img2Rotate }}
               transition={{ duration: 1, delay: 0.6, type: "spring" }}
-              className="absolute z-0 w-[240px] sm:w-[280px] aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-white left-[5%] sm:left-[10%] bottom-[15%]"
+              className="absolute z-0 w-[240px] sm:w-[280px] aspect-square left-[5%] sm:left-[10%] bottom-[15%]"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1600&auto=format&fit=crop" 
-                alt="Fabric detail" 
-                className="w-full h-full object-cover"
-              />
+              <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-xl border-8 border-white relative group cursor-crosshair">
+                <img 
+                  src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1600&auto=format&fit=crop" 
+                  alt="Fabric detail" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
             </motion.div>
             
             {/* Floating Quality Badge */}
             <motion.div 
-              animate={{ y: [0, -10, 0] }} 
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute bottom-1/4 right-0 lg:-right-4 bg-white/95 backdrop-blur-xl px-6 py-4 rounded-2xl flex items-center gap-4 z-30 shadow-2xl shadow-slate-900/10 border border-slate-100"
+              style={{ x: badgeX, y: badgeY }}
+              whileHover={{ scale: 1.05 }}
+              className="absolute bottom-1/4 right-0 lg:-right-4 bg-white/95 backdrop-blur-xl px-6 py-4 rounded-2xl flex items-center gap-4 z-30 shadow-2xl shadow-slate-900/10 border border-slate-100 cursor-default transition-shadow hover:shadow-xl"
             >
               <div className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center">
                 <CheckCircle2 className="text-white w-6 h-6" />
