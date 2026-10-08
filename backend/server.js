@@ -32,7 +32,13 @@ app.use(helmet());
 
 // Enable CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://t-shirt-brand-mern.vercel.app', process.env.FRONTEND_URL].filter(Boolean),
+  origin: function (origin, callback) {
+    if (!origin || origin.startsWith('http://localhost:') || origin.endsWith('.vercel.app') || origin === process.env.FRONTEND_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Allow cookies to be sent
 }));
 
