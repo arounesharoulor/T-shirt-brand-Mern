@@ -144,8 +144,8 @@ const AdminOrders = () => {
                           <Check className="w-3 h-3" /> Paid
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">
-                          <X className="w-3 h-3" /> Unpaid
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${order.paymentMethod === 'COD' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>
+                          <X className="w-3 h-3" /> {order.paymentMethod === 'COD' ? 'COD' : 'Unpaid'}
                         </span>
                       )}
                     </td>
