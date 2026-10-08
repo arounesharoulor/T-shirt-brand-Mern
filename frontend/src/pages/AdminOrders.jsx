@@ -273,7 +273,16 @@ const AdminOrders = () => {
               <div>
                 <h4 className="text-sm font-bold text-slate-500 uppercase mb-2">Attached Image</h4>
                 {selectedOrder.refundRequest.image ? (
-                  <img src={selectedOrder.refundRequest.image} alt="Refund Proof" className="w-full rounded-xl border border-slate-200" />
+                  <div className="flex flex-col gap-2">
+                    <img 
+                      src={selectedOrder.refundRequest.image} 
+                      alt="Refund Proof" 
+                      className="w-full max-h-[400px] object-contain rounded-xl border border-slate-200 bg-slate-50" 
+                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                    />
+                    <div style={{ display: 'none' }} className="text-red-500 text-sm">Failed to load image. Invalid format.</div>
+                    <a href={selectedOrder.refundRequest.image} download={`refund-proof-${selectedOrder._id}`} className="text-sm text-blue-600 hover:underline inline-block">Download / View Image</a>
+                  </div>
                 ) : (
                   <p className="text-slate-500 italic">No image provided.</p>
                 )}
