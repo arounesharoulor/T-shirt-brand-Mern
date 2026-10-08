@@ -27,12 +27,17 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Shop', path: '/shop' },
-    { name: 'Customise', path: '/customiser' },
-    { name: 'Help & Support', path: '/help' },
-  ];
+  const navLinks = user?.role === 'admin'
+    ? [
+        { name: 'Dashboard', path: '/admin' },
+        { name: 'Orders', path: '/admin/orders' },
+      ]
+    : [
+        { name: 'Home', path: '/' },
+        { name: 'Shop', path: '/shop' },
+        { name: 'Customise', path: '/customiser' },
+        { name: 'Help & Support', path: '/help' },
+      ];
 
   const toggleCurrency = () => {
     setCurrency(currency === 'USD' ? 'INR' : 'USD');
@@ -69,16 +74,6 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            {user && user.role === 'admin' && (
-              <Link
-                to="/admin"
-                className={`text-sm font-bold transition-colors hover:text-primary ${
-                  location.pathname.startsWith('/admin') ? 'text-primary' : 'text-slate-600'
-                }`}
-              >
-                Admin Panel
-              </Link>
-            )}
           </div>
 
           {/* Desktop Right Actions */}
@@ -92,7 +87,7 @@ const Navbar = () => {
               <span>{currency}</span>
             </button>
 
-            {user && (
+            {user && user.role !== 'admin' && (
               <Link to="/wishlist" className="text-slate-600 hover:text-red-500 transition-colors">
                 <Heart className="w-5 h-5" />
               </Link>
@@ -102,7 +97,7 @@ const Navbar = () => {
               <User className="w-5 h-5" />
             </Link>
 
-            {user && (
+            {user && user.role !== 'admin' && (
               <Link to="/cart" className="relative text-slate-600 hover:text-slate-900 transition-colors">
                 <ShoppingCart className="w-5 h-5" />
                 {getCartCount() > 0 && (
@@ -158,19 +153,6 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              {user && user.role === 'admin' && (
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`text-base font-bold px-4 py-2 rounded-xl transition-colors ${
-                    location.pathname.startsWith('/admin')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Admin Panel
-                </Link>
-              )}
               <div className="h-px bg-slate-100 my-2" />
               <Link
                 to={user ? "/profile" : "/login"}
@@ -179,13 +161,15 @@ const Navbar = () => {
               >
                 <User className="w-5 h-5" /> {user ? "My Profile" : "Account / Login"}
               </Link>
-              <Link
-                to="/cart"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-xl font-bold"
-              >
-                <ShoppingCart className="w-5 h-5" /> Cart ({getCartCount()} items)
-              </Link>
+              {(!user || user.role !== 'admin') && (
+                <Link
+                  to="/cart"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-xl font-bold"
+                >
+                  <ShoppingCart className="w-5 h-5" /> Cart ({getCartCount()} items)
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
