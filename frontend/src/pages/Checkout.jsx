@@ -172,47 +172,7 @@ const Checkout = () => {
         return;
       }
 
-      // Create order in DB first (so it's recorded)
-      const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          orderItems: cartItems.map(item => ({
-            name: item.product.name,
-            qty: item.quantity,
-            image: item.product.image,
-            price: item.product.price,
-            product: getValidObjectId(item.product.isCustomized ? item.product.baseProductId : (item.product.id || item.product._id)),
-            color: item.color || item.product.colorName || item.product.color || 'Custom',
-            size: item.size || 'M'
-          })),
-          shippingAddress: {
-            street: formData.address,
-            city: formData.city,
-            postalCode: formData.postalCode,
-            country: 'India'
-          },
-          paymentMethod: 'Razorpay',
-          itemsPrice: subtotal,
-          taxPrice: gst,
-          shippingPrice: shipping,
-          totalPrice: total
-        })
-      });
-      const dbOrderData = await orderRes.json();
-
-      if (!dbOrderData.success) {
-        toast.error('Failed to create order');
-        setLoading(false);
-        return;
-      }
-
-      const dbOrderId = dbOrderData.data._id;
-
-      // Initiate Razorpay transaction
+      // Initiate Razorpay transaction (no order in DB yet)
       const rzpOrderResponse = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay', {
         method: 'POST',
         headers: {
@@ -242,6 +202,44 @@ const Checkout = () => {
         order_id: rzpOrderData.data.id,
         handler: async function (response) {
           try {
+            // Create order in DB FIRST now that payment was successful
+            const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+              body: JSON.stringify({
+                orderItems: cartItems.map(item => ({
+                  name: item.product.name,
+                  qty: item.quantity,
+                  image: item.product.image,
+                  price: item.product.price,
+                  product: getValidObjectId(item.product.isCustomized ? item.product.baseProductId : (item.product.id || item.product._id)),
+                  color: item.color || item.product.colorName || item.product.color || 'Custom',
+                  size: item.size || 'M'
+                })),
+                shippingAddress: {
+                  street: formData.address,
+                  city: formData.city,
+                  postalCode: formData.postalCode,
+                  country: 'India'
+                },
+                paymentMethod: 'Razorpay',
+                itemsPrice: subtotal,
+                taxPrice: gst,
+                shippingPrice: shipping,
+                totalPrice: total
+              })
+            });
+            const dbOrderData = await orderRes.json();
+            
+            if (!dbOrderData.success) {
+               toast.error('Payment succeeded but failed to create order record. Please contact support.');
+               return;
+            }
+
+            // Verify payment
             const verifyRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay/verify', {
               method: 'POST',
               headers: {
@@ -252,7 +250,7 @@ const Checkout = () => {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
-                orderId: dbOrderId
+                orderId: dbOrderData.data._id
               })
             });
             const verifyData = await verifyRes.json();
