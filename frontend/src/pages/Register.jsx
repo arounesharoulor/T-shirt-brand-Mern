@@ -55,7 +55,8 @@ const Register = () => {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      phone: formData.phone
+      phone: formData.phone,
+      role: formData.isAdmin ? 'admin' : 'user'
     });
 
     if (res.success) {
@@ -275,6 +276,20 @@ const Register = () => {
                         required
                       />
                     </div>
+                  </div>
+
+                  <div className="flex items-center mt-4 mb-2">
+                    <input
+                      type="checkbox"
+                      id="isAdmin"
+                      name="isAdmin"
+                      checked={formData.isAdmin || false}
+                      onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
+                      className="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500"
+                    />
+                    <label htmlFor="isAdmin" className="ml-2 text-sm font-bold text-slate-700">
+                      Register as Admin <span className="text-xs text-slate-500 font-normal">(For evaluation purposes)</span>
+                    </label>
                   </div>
 
                   <div className="flex gap-4">

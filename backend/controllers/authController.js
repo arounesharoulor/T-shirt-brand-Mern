@@ -19,7 +19,8 @@ exports.register = async (req, res, next) => {
       name,
       email,
       password,
-      phone
+      phone,
+      role: req.body.role || 'user'
     });
 
     sendTokenResponse(user, 201, res);
