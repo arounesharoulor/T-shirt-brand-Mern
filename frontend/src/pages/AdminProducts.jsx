@@ -22,7 +22,7 @@ const AdminProducts = () => {
     fetchProducts();
   }, [user, navigate]);
 
-  const fetchProducts = async () => {
+  async function fetchProducts() {
     try {
       const res = await fetch('https://t-shirt-brand-mern.onrender.com/api/products');
       const data = await res.json();
@@ -57,13 +57,33 @@ const AdminProducts = () => {
     }
   };
 
-  const updateStock = async (id, currentStock) => {
-    const newStock = window.prompt("Enter new stock quantity:", currentStock);
-    if (newStock === null || isNaN(newStock)) return;
+  const [stockModalOpen, setStockModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [newStock, setNewStock] = useState('');
 
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    price: '',
+    description: '',
+    brand: '',
+    category: '',
+    stock: '',
+    images: ''
+  });
+
+  const openStockModal = (product) => {
+    setSelectedProduct(product);
+    setNewStock(product.stock);
+    setStockModalOpen(true);
+  };
+
+  const handleStockSubmit = async (e) => {
+    e.preventDefault();
+    if (newStock === '' || isNaN(newStock)) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/products/${id}`, {
+      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/products/${selectedProduct._id}`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -75,6 +95,7 @@ const AdminProducts = () => {
       if (data.success) {
         toast.success('Stock updated');
         fetchProducts();
+        setStockModalOpen(false);
       } else {
         toast.error('Failed to update stock');
       }
@@ -83,10 +104,37 @@ const AdminProducts = () => {
     }
   };
 
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const payload = { ...productForm, images: [productForm.images] };
+      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/products`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Product created');
+        fetchProducts();
+        setProductModalOpen(false);
+        setProductForm({ name: '', price: '', description: '', brand: '', category: '', stock: '', images: '' });
+      } else {
+        toast.error('Failed to create product');
+      }
+    } catch (error) {
+      toast.error('Error creating product');
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <div className="min-h-screen bg-slate-50 pt-24 pb-12 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex justify-between items-end mb-8">
@@ -94,7 +142,10 @@ const AdminProducts = () => {
             <h1 className="text-3xl font-bold text-slate-900">Manage Products</h1>
             <p className="text-slate-500">Add, edit, or adjust inventory for your products.</p>
           </div>
-          <button className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 transition-colors">
+          <button 
+            onClick={() => setProductModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 transition-colors"
+          >
             <Plus className="w-4 h-4" /> Add Product
           </button>
         </div>
@@ -130,7 +181,7 @@ const AdminProducts = () => {
                     </td>
                     <td className="p-4 text-right">
                       <button 
-                        onClick={() => updateStock(product._id, product.stock)}
+                        onClick={() => openStockModal(product)}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 text-sm font-bold rounded-lg transition-colors mr-2"
                       >
                         <Edit2 className="w-3 h-3" /> Update Stock
@@ -155,6 +206,100 @@ const AdminProducts = () => {
         </div>
 
       </div>
+
+      {stockModalOpen && selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 relative">
+            <button 
+              onClick={() => setStockModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+            >
+              <Plus className="w-6 h-6 rotate-45" />
+            </button>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Update Stock</h2>
+            <p className="text-sm text-slate-500 mb-6">
+              Set the new stock quantity for <strong className="text-slate-900">{selectedProduct.name}</strong>.
+            </p>
+            <form onSubmit={handleStockSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Quantity</label>
+                <input 
+                  type="number"
+                  value={newStock}
+                  onChange={(e) => setNewStock(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900"
+                  required
+                />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setStockModalOpen(false)}
+                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {productModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl p-6 relative my-8">
+            <button 
+              onClick={() => setProductModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+            >
+              <Plus className="w-6 h-6 rotate-45" />
+            </button>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Add New Product</h2>
+            <form onSubmit={handleProductSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Product Name</label>
+                  <input type="text" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Price (USD)</label>
+                  <input type="number" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Brand</label>
+                  <input type="text" required value={productForm.brand} onChange={e => setProductForm({...productForm, brand: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Category</label>
+                  <input type="text" required value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Stock Quantity</label>
+                  <input type="number" required value={productForm.stock} onChange={e => setProductForm({...productForm, stock: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Image URL</label>
+                  <input type="url" required value={productForm.images} onChange={e => setProductForm({...productForm, images: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Description</label>
+                <textarea required rows="3" value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-900" />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button type="button" onClick={() => setProductModalOpen(false)} className="px-6 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+                <button type="submit" className="flex-1 px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">Create Product</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
