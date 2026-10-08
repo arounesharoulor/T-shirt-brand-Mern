@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Trash2, Loader2, Plus, Percent } from 'lucide-react';
+import { Trash2, Loader2, Plus, Percent, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const AdminCoupons = () => {
@@ -92,6 +92,9 @@ const AdminCoupons = () => {
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <div>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-4 font-bold">
+              <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
             <h1 className="text-3xl font-display font-black text-slate-900 uppercase">Manage Coupons</h1>
             <p className="text-slate-500 mt-2">Create and manage discount codes.</p>
           </div>

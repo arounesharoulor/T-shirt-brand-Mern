@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, Loader2, ArrowLeft } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
 import toast from 'react-hot-toast';
@@ -139,6 +139,9 @@ const AdminProducts = () => {
         
         <div className="flex justify-between items-end mb-8">
           <div>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-4 font-bold">
+              <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
             <h1 className="text-3xl font-bold text-slate-900">Manage Products</h1>
             <p className="text-slate-500">Add, edit, or adjust inventory for your products.</p>
           </div>
