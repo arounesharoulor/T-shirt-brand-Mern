@@ -5,7 +5,7 @@ const User = require('../models/User');
 // @access  Private/Admin
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: 'user' });
 
     res.status(200).json({
       success: true,
