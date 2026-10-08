@@ -32,6 +32,15 @@ exports.addOrderItems = async (req, res, next) => {
 
       const createdOrder = await order.save();
 
+      // Update product stock
+      for (const item of orderItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock -= item.qty;
+          await product.save();
+        }
+      }
+
       // Add address to user profile if it doesn't exist
       const User = require('../models/User');
       const user = await User.findById(req.user._id);
@@ -174,7 +183,16 @@ exports.cancelOrder = async (req, res, next) => {
     }
 
     order.isCancelled = true;
+    order.status = 'Cancelled';
     const updatedOrder = await order.save();
+
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.qty;
+        await product.save();
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -205,7 +223,16 @@ exports.returnOrder = async (req, res, next) => {
     }
 
     order.isReturned = true;
+    order.status = 'Returned';
     const updatedOrder = await order.save();
+
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.qty;
+        await product.save();
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -229,6 +256,63 @@ exports.updateOrderToDelivered = async (req, res, next) => {
 
     order.isDelivered = true;
     order.deliveredAt = Date.now();
+    order.status = 'Delivered';
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedOrder
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update order status (including refund proof)
+// @route   PUT /api/orders/:id/status
+// @access  Private/Admin
+exports.updateOrderStatus = async (req, res, next) => {
+  try {
+    const { status, refundProof } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    if (status) {
+      const prevStatus = order.status;
+      order.status = status;
+      if (status === 'Delivered') {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+      } else if (status === 'Cancelled' && prevStatus !== 'Cancelled' && prevStatus !== 'Returned') {
+        order.isCancelled = true;
+        // Increase stock back
+        for (const item of order.orderItems) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            product.stock += item.qty;
+            await product.save();
+          }
+        }
+      } else if (status === 'Returned' && prevStatus !== 'Cancelled' && prevStatus !== 'Returned') {
+        order.isReturned = true;
+        // Increase stock back
+        for (const item of order.orderItems) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            product.stock += item.qty;
+            await product.save();
+          }
+        }
+      }
+    }
+
+    if (refundProof) {
+      order.refundProof = refundProof;
+    }
 
     const updatedOrder = await order.save();
 

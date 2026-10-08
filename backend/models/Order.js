@@ -88,6 +88,14 @@ const OrderSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  status: {
+    type: String,
+    enum: ['Pending', 'In Transit', 'Delivered', 'Cancelled', 'Returned'],
+    default: 'Pending',
+  },
+  refundProof: {
+    type: String,
+  },
 }, {
   timestamps: true
 });

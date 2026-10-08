@@ -42,17 +42,21 @@ const AdminOrders = () => {
     }
   };
 
-  const markAsDelivered = async (orderId) => {
+  const updateStatus = async (orderId, status, refundProof = null) => {
     setActionLoading(orderId);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/orders/${orderId}/deliver`, {
+      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/orders/${orderId}/status`, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status, refundProof })
       });
       const data = await res.json();
       if (data.success) {
-        toast.success('Order marked as delivered');
+        toast.success(`Order marked as ${status}`);
         fetchOrders();
       } else {
         toast.error(data.error || 'Failed to update order');
@@ -85,7 +89,7 @@ const AdminOrders = () => {
                   <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider">Date</th>
                   <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider">Total</th>
                   <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider">Paid</th>
-                  <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider">Delivered</th>
+                  <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider">Status</th>
                   <th className="p-4 font-bold text-slate-500 text-sm uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
@@ -108,26 +112,49 @@ const AdminOrders = () => {
                       )}
                     </td>
                     <td className="p-4">
-                      {order.isDelivered ? (
+                      {order.status === 'Delivered' && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
                           <Check className="w-3 h-3" /> Delivered
                         </span>
-                      ) : (
+                      )}
+                      {order.status === 'In Transit' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                          <Truck className="w-3 h-3" /> In Transit
+                        </span>
+                      )}
+                      {order.status === 'Pending' && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
-                          <Truck className="w-3 h-3" /> Pending
+                          <Loader2 className="w-3 h-3" /> Pending
+                        </span>
+                      )}
+                      {(order.status === 'Cancelled' || order.status === 'Returned') && (
+                        <span className="inline-flex flex-col gap-1 px-2.5 py-1 rounded-xl bg-red-100 text-red-700 text-xs font-bold">
+                          <div className="flex items-center gap-1"><X className="w-3 h-3" /> {order.status}</div>
+                          {order.refundProof && <div className="text-[10px] font-normal break-all">Proof: {order.refundProof}</div>}
                         </span>
                       )}
                     </td>
                     <td className="p-4 text-right">
-                      {!order.isDelivered && (
-                        <button
-                          onClick={() => markAsDelivered(order._id)}
-                          disabled={actionLoading === order._id}
-                          className="inline-flex items-center justify-center px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
-                        >
-                          {actionLoading === order._id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Mark Delivered'}
-                        </button>
-                      )}
+                      <select 
+                        value={order.status}
+                        onChange={(e) => {
+                          const newStatus = e.target.value;
+                          let proof = null;
+                          if (newStatus === 'Cancelled' || newStatus === 'Returned') {
+                            proof = window.prompt("Please enter the refund transaction ID or proof (optional):");
+                          }
+                          updateStatus(order._id, newStatus, proof);
+                        }}
+                        disabled={actionLoading === order._id}
+                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-slate-900 disabled:opacity-50"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Returned">Returned</option>
+                      </select>
+                      {actionLoading === order._id && <Loader2 className="w-4 h-4 animate-spin ml-2 inline" />}
                     </td>
                   </tr>
                 ))}

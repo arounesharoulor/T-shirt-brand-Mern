@@ -17,6 +17,7 @@ import MyOrders from './pages/MyOrders';
 import Help from './pages/Help';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
+import AdminProducts from './pages/AdminProducts';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -52,6 +53,7 @@ function App() {
                     <Route path="/help" element={<Help />} />
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
+                    <Route path="/admin/products" element={<AdminProducts />} />
                   </Routes>
                 </main>
               </div>

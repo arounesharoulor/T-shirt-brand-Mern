@@ -116,15 +116,16 @@ const AdminDashboard = () => {
             <p className="text-slate-500 text-sm">View all customer orders, update shipping statuses, and process refunds.</p>
           </Link>
           
-          <div className="group bg-slate-100 p-6 rounded-2xl shadow-sm border border-slate-200 opacity-70 cursor-not-allowed">
+          <Link to="/admin/products" className="group bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300">
             <div className="flex justify-between items-center mb-4">
-              <div className="p-3 bg-slate-400 text-white rounded-lg">
+              <div className="p-3 bg-slate-900 text-white rounded-lg">
                 <Package className="w-6 h-6" />
               </div>
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">Manage Products</h3>
-            <p className="text-slate-500 text-sm">Add or edit T-shirts and inventory. (Uses static file currently).</p>
-          </div>
+            <p className="text-slate-500 text-sm">Add or edit T-shirts, manage stock and prices.</p>
+          </Link>
         </div>
 
       </div>
