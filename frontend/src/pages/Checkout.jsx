@@ -119,7 +119,7 @@ const Checkout = () => {
     
     if (paymentMethod === 'cod') {
       try {
-        const orderRes = await fetch('http://localhost:5000/api/orders', {
+        const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ const Checkout = () => {
       }
 
       // Create order in DB first (so it's recorded)
-      const orderRes = await fetch('http://localhost:5000/api/orders', {
+      const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ const Checkout = () => {
       const dbOrderId = dbOrderData.data._id;
 
       // Initiate Razorpay transaction
-      const rzpOrderResponse = await fetch('http://localhost:5000/api/payment/razorpay', {
+      const rzpOrderResponse = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ const Checkout = () => {
       }
 
       // Get config/key
-      const configResponse = await fetch('http://localhost:5000/api/payment/config');
+      const configResponse = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/config');
       const configData = await configResponse.json();
 
       const options = {
@@ -242,7 +242,7 @@ const Checkout = () => {
         order_id: rzpOrderData.data.id,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch('http://localhost:5000/api/payment/razorpay/verify', {
+            const verifyRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay/verify', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
