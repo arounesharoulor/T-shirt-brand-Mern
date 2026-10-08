@@ -96,6 +96,13 @@ const OrderSchema = new mongoose.Schema({
   refundProof: {
     type: String,
   },
+  refundRequest: {
+    isRequested: { type: Boolean, default: false },
+    reason: { type: String },
+    description: { type: String },
+    image: { type: String },
+    requestedAt: { type: Date }
+  }
 }, {
   timestamps: true
 });

@@ -76,6 +76,7 @@ const AdminOrders = () => {
   };
 
   const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState('');
   const [refundProof, setRefundProof] = useState('');
@@ -95,6 +96,11 @@ const AdminOrders = () => {
     e.preventDefault();
     updateStatus(selectedOrder._id, newStatus, refundProof);
     setStatusModalOpen(false);
+  };
+
+  const openReviewModal = (order) => {
+    setSelectedOrder(order);
+    setReviewModalOpen(true);
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>;
@@ -163,20 +169,30 @@ const AdminOrders = () => {
                         </span>
                       )}
                     </td>
-                    <td className="p-4 text-right">
-                      <select 
-                        value={order.status}
-                        onChange={(e) => openStatusModal(order, e.target.value)}
-                        disabled={actionLoading === order._id}
-                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-slate-900 disabled:opacity-50"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="In Transit">In Transit</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                        <option value="Returned">Returned</option>
-                      </select>
-                      {actionLoading === order._id && <Loader2 className="w-4 h-4 animate-spin ml-2 inline" />}
+                    <td className="p-4 text-right flex flex-col items-end gap-2">
+                      <div className="flex items-center gap-2">
+                        <select 
+                          value={order.status}
+                          onChange={(e) => openStatusModal(order, e.target.value)}
+                          disabled={actionLoading === order._id}
+                          className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-slate-900 disabled:opacity-50"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="In Transit">In Transit</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                          <option value="Returned">Returned</option>
+                        </select>
+                        {actionLoading === order._id && <Loader2 className="w-4 h-4 animate-spin inline" />}
+                      </div>
+                      {order.refundRequest?.isRequested && (
+                        <button 
+                          onClick={() => openReviewModal(order)}
+                          className="text-xs px-3 py-1.5 bg-amber-100 text-amber-800 font-bold rounded-lg hover:bg-amber-200 transition-colors"
+                        >
+                          Review Request
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -231,6 +247,56 @@ const AdminOrders = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {reviewModalOpen && selectedOrder?.refundRequest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setReviewModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Refund / Return Request</h2>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <h4 className="text-sm font-bold text-slate-500 uppercase">Reason</h4>
+                <p className="text-slate-900 font-medium">{selectedOrder.refundRequest.reason}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-500 uppercase">Description</h4>
+                <p className="text-slate-900">{selectedOrder.refundRequest.description}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-500 uppercase mb-2">Attached Image</h4>
+                {selectedOrder.refundRequest.image ? (
+                  <img src={selectedOrder.refundRequest.image} alt="Refund Proof" className="w-full rounded-xl border border-slate-200" />
+                ) : (
+                  <p className="text-slate-500 italic">No image provided.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4 border-t border-slate-100">
+              <button 
+                onClick={() => setReviewModalOpen(false)}
+                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors"
+              >
+                Close
+              </button>
+              <button 
+                onClick={() => {
+                  setReviewModalOpen(false);
+                  openStatusModal(selectedOrder, 'Returned');
+                }}
+                className="flex-1 px-4 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors"
+              >
+                Approve & Return
+              </button>
+            </div>
           </div>
         </div>
       )}

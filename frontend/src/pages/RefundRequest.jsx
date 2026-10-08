@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { UploadCloud, CheckCircle, ShieldAlert, ArrowLeft } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const RefundRequest = () => {
   const navigate = useNavigate();
@@ -25,10 +26,46 @@ const RefundRequest = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API submission
-    setSubmitted(true);
+    if (!formData.orderNumber) {
+      toast.error('Order number is missing');
+      return;
+    }
+
+    try {
+      let base64Image = '';
+      if (file) {
+        const reader = new FileReader();
+        base64Image = await new Promise((resolve) => {
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/orders/${formData.orderNumber}/refund-request`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          reason: formData.reason,
+          description: formData.description,
+          image: base64Image
+        })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        setSubmitted(true);
+      } else {
+        toast.error(data.error || 'Failed to submit request');
+      }
+    } catch (error) {
+      toast.error('An error occurred while submitting.');
+    }
   };
 
   if (submitted) {

@@ -324,3 +324,42 @@ exports.updateOrderStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Submit refund/return request with image
+// @route   POST /api/orders/:id/refund-request
+// @access  Private
+exports.submitRefundRequest = async (req, res, next) => {
+  try {
+    const { reason, description, image } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    if (order.refundRequest && order.refundRequest.isRequested) {
+      return res.status(400).json({ success: false, error: 'Refund already requested' });
+    }
+
+    order.refundRequest = {
+      isRequested: true,
+      reason,
+      description,
+      image,
+      requestedAt: Date.now()
+    };
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedOrder
+    });
+  } catch (error) {
+    next(error);
+  }
+};

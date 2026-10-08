@@ -280,31 +280,44 @@ const MyOrders = () => {
 
                       {/* Status Bar */}
                       <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          {order.isCancelled ? (
-                            <>
-                              <XCircle className="w-5 h-5 text-red-600" />
-                              <span className="font-bold text-red-700">Cancelled</span>
-                            </>
-                          ) : order.isReturned ? (
-                            <>
-                              <RotateCcw className="w-5 h-5 text-orange-600" />
-                              <span className="font-bold text-orange-700">Returned</span>
-                            </>
-                          ) : order.isDelivered ? (
-                            <>
-                              <CheckCircle2 className="w-5 h-5 text-green-600" />
-                              <span className="font-bold text-green-700">Delivered on {order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'N/A'}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Truck className="w-5 h-5 text-black" />
-                              <span className="font-bold text-black">
-                                Arriving by {getDeliveryDate(order.createdAt)}
-                              </span>
-                            </>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            {order.isCancelled ? (
+                              <>
+                                <XCircle className="w-5 h-5 text-red-600" />
+                                <span className="font-bold text-red-700">Cancelled</span>
+                              </>
+                            ) : order.isReturned ? (
+                              <>
+                                <RotateCcw className="w-5 h-5 text-orange-600" />
+                                <span className="font-bold text-orange-700">Returned</span>
+                              </>
+                            ) : order.isDelivered ? (
+                              <>
+                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                <span className="font-bold text-green-700">Delivered on {order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'N/A'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Truck className="w-5 h-5 text-black" />
+                                <span className="font-bold text-black">
+                                  Arriving by {getDeliveryDate(order.createdAt)}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          {(order.isCancelled || order.isReturned) && order.refundProof && (
+                            <div className="text-sm text-gray-600 ml-7">
+                              <span className="font-bold">Refund/Return Info:</span> {order.refundProof}
+                            </div>
+                          )}
+                          {order.refundRequest?.isRequested && !order.isReturned && !order.isCancelled && (
+                            <div className="text-sm text-amber-600 ml-7 font-bold">
+                              Return requested. Under review.
+                            </div>
                           )}
                         </div>
+
 
                         {/* Actions */}
                         <div>
