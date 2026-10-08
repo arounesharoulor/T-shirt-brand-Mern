@@ -30,6 +30,10 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  
   const [formData, setFormData] = useState({
     email: user?.email || '',
     firstName: user?.name ? user.name.split(' ')[0] : '',
@@ -41,9 +45,34 @@ const Checkout = () => {
   });
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
-  const gst = subtotal * 0.18;
-  const shipping = subtotal > 100 ? 0 : 15.00;
-  const total = subtotal + gst + shipping;
+  const discountAmount = appliedCoupon ? (subtotal * (appliedCoupon.discountPercent / 100)) : 0;
+  const newSubtotal = subtotal - discountAmount;
+  const gst = newSubtotal * 0.18;
+  const shipping = newSubtotal > 100 ? 0 : 15.00;
+  const total = newSubtotal + gst + shipping;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setCouponLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://t-shirt-brand-mern.onrender.com/api/coupons/${couponCode}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon(data.data);
+        toast.success(`Coupon applied! ${data.data.discountPercent}% off`);
+      } else {
+        toast.error(data.error || 'Invalid or expired coupon');
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      toast.error('Error applying coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -554,11 +583,46 @@ const Checkout = () => {
             ))}
           </div>
 
+          <div className="mb-6 flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Discount code" 
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              disabled={appliedCoupon || couponLoading}
+              className="flex-1 px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all uppercase"
+            />
+            {appliedCoupon ? (
+              <button 
+                type="button" 
+                onClick={() => { setAppliedCoupon(null); setCouponCode(''); toast.success('Coupon removed'); }}
+                className="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition-colors"
+              >
+                Remove
+              </button>
+            ) : (
+              <button 
+                type="button" 
+                onClick={handleApplyCoupon}
+                disabled={!couponCode || couponLoading}
+                className="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50"
+              >
+                Apply
+              </button>
+            )}
+          </div>
+
           <div className="space-y-3 text-sm text-slate-600 border-t border-slate-200 pt-6 mb-6">
             <div className="flex justify-between items-center">
               <span>Subtotal</span>
               <span className="font-medium text-slate-900">{formatPrice(subtotal)}</span>
             </div>
+            {appliedCoupon && (
+              <div className="flex justify-between items-center text-green-600 font-medium">
+                <span>Discount ({appliedCoupon.code})</span>
+                <span>-{formatPrice(discountAmount)}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center">
               <span>Shipping</span>
               <span className="font-medium text-slate-900">{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>

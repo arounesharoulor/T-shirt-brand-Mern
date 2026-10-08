@@ -59,6 +59,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
 const userRoutes = require('./routes/userRoutes');
+const couponRoutes = require('./routes/couponRoutes');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -67,6 +68,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/coupons', couponRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'API is running smoothly' });

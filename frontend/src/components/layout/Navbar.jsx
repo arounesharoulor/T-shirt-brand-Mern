@@ -30,7 +30,10 @@ const Navbar = () => {
   const navLinks = user?.role === 'admin'
     ? [
         { name: 'Dashboard', path: '/admin' },
+        { name: 'Products', path: '/admin/products' },
         { name: 'Orders', path: '/admin/orders' },
+        { name: 'Customers', path: '/admin/users' },
+        { name: 'Coupons', path: '/admin/coupons' },
       ]
     : [
         { name: 'Home', path: '/' },

@@ -18,6 +18,8 @@ import Help from './pages/Help';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
 import AdminProducts from './pages/AdminProducts';
+import AdminUsers from './pages/AdminUsers';
+import AdminCoupons from './pages/AdminCoupons';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -54,6 +56,8 @@ function App() {
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
                     <Route path="/admin/products" element={<AdminProducts />} />
+                    <Route path="/admin/users" element={<AdminUsers />} />
+                    <Route path="/admin/coupons" element={<AdminCoupons />} />
                   </Routes>
                 </main>
               </div>
