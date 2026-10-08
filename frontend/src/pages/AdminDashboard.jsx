@@ -87,30 +87,34 @@ const AdminDashboard = () => {
             </div>
           </motion.div>
           
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl">
-              <Package className="w-8 h-8" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Total Orders</p>
-              <h3 className="text-2xl font-black text-slate-900">{stats.totalOrders}</h3>
-            </div>
-          </motion.div>
+          <Link to="/admin/orders" className="block">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl">
+                <Package className="w-8 h-8" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Total Orders</p>
+                <h3 className="text-2xl font-black text-slate-900">{stats.totalOrders}</h3>
+              </div>
+            </motion.div>
+          </Link>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-            <div className="p-4 bg-purple-50 text-purple-600 rounded-xl">
-              <Users className="w-8 h-8" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Customers</p>
-              <h3 className="text-2xl font-black text-slate-900">{stats.totalUsers}</h3>
-            </div>
-          </motion.div>
+          <Link to="/admin/users" className="block">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="p-4 bg-purple-50 text-purple-600 rounded-xl">
+                <Users className="w-8 h-8" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Customers</p>
+                <h3 className="text-2xl font-black text-slate-900">{stats.totalUsers}</h3>
+              </div>
+            </motion.div>
+          </Link>
         </div>
 
         {/* Quick Links */}
         <h2 className="text-xl font-bold text-slate-900 mb-6">Management Areas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link to="/admin/orders" className="group bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300">
             <div className="flex justify-between items-center mb-4">
               <div className="p-3 bg-slate-900 text-white rounded-lg">
@@ -131,6 +135,28 @@ const AdminDashboard = () => {
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">Manage Products</h3>
             <p className="text-slate-500 text-sm">Add or edit T-shirts, manage stock and prices.</p>
+          </Link>
+
+          <Link to="/admin/users" className="group bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300">
+            <div className="flex justify-between items-center mb-4">
+              <div className="p-3 bg-slate-900 text-white rounded-lg">
+                <Users className="w-6 h-6" />
+              </div>
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Manage Customers</h3>
+            <p className="text-slate-500 text-sm">View registered customers and manage user accounts.</p>
+          </Link>
+
+          <Link to="/admin/coupons" className="group bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300">
+            <div className="flex justify-between items-center mb-4">
+              <div className="p-3 bg-slate-900 text-white rounded-lg">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Manage Coupons</h3>
+            <p className="text-slate-500 text-sm">Create and manage discount codes for checkout.</p>
           </Link>
         </div>
 
