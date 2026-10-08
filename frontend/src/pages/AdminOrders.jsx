@@ -22,9 +22,16 @@ const AdminOrders = () => {
     }
 
     fetchOrders();
+    
+    // Auto-refresh orders every 5 seconds to show new orders immediately
+    const interval = setInterval(() => {
+      fetchOrders(true);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [user, navigate]);
 
-  async function fetchOrders() {
+  async function fetchOrders(isSilent = false) {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
@@ -36,7 +43,7 @@ const AdminOrders = () => {
         setOrders(data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       }
     } catch (error) {
-      toast.error('Failed to fetch orders');
+      if (!isSilent) toast.error('Failed to fetch orders');
     } finally {
       setLoading(false);
     }

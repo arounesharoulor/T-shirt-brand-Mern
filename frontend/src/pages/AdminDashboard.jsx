@@ -23,7 +23,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    const fetchStats = async () => {
+    const fetchStats = async (isSilent = false) => {
       try {
         const token = localStorage.getItem('token');
         const [ordersRes, usersRes] = await Promise.all([
@@ -50,12 +50,18 @@ const AdminDashboard = () => {
           });
         }
       } catch (error) {
-        console.error('Failed to fetch admin stats', error);
+        if (!isSilent) console.error('Failed to fetch admin stats', error);
         setStats(s => ({ ...s, loading: false }));
       }
     };
 
     fetchStats();
+
+    const interval = setInterval(() => {
+      fetchStats(true);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [user, navigate]);
 
   if (stats.loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
