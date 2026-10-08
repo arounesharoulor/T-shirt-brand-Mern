@@ -64,9 +64,22 @@ const Cart = () => {
                     key={`${item.product._id}-${item.size}`} 
                     className="flex flex-col sm:flex-row gap-6 py-6 border-b border-slate-100 last:border-0"
                   >
-                    {/* Item Image */}
-                    <div className="w-24 sm:w-32 aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden shrink-0">
+                    <div className="w-24 sm:w-32 aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden shrink-0 relative group">
                       <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                      {item.product.isCustomized && (
+                        <>
+                          {item.product.colorHex && item.product.colorName !== 'White' && (
+                            <div className="absolute inset-0 mix-blend-multiply opacity-60 pointer-events-none" style={{ backgroundColor: item.product.colorHex }} />
+                          )}
+                          {item.product.customImage && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div style={{ width: '60%', height: '50%', position: 'relative' }}>
+                                <img src={item.product.customImage} className="w-full h-full object-contain" />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
 
                     {/* Item Details */}
@@ -78,7 +91,7 @@ const Cart = () => {
                               {item.product.name}
                             </Link>
                           </h3>
-                          <p className="text-slate-500 text-sm font-medium mb-1">Color: {item.product.color}</p>
+                          <p className="text-slate-500 text-sm font-medium mb-1">Color: {item.product.colorName || item.product.color || 'Custom'}</p>
                           <p className="text-slate-500 text-sm font-medium">Size: {item.size}</p>
                         </div>
                         <button 

@@ -5,11 +5,14 @@ import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { COLORS } from '../data/products';
 import { useCurrency } from '../context/CurrencyContext';
+import { useCart } from '../context/CartContext';
+import toast from 'react-hot-toast';
 
 const Customiser = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { formatPrice } = useCurrency();
+  const { addToCart } = useCart();
   
   // Passed state from ProductDetail
   const passedProduct = location.state?.product || null;
@@ -31,6 +34,8 @@ const Customiser = () => {
   const [canvas, setCanvas] = useState(null);
   const [selectedSize, setSelectedSize] = useState('M');
   const [activeTab, setActiveTab] = useState('text');
+  const [activeObj, setActiveObj] = useState(null);
+  const [textColor, setTextColor] = useState('#000000');
 
   useEffect(() => {
     // Initialize Fabric.js canvas
@@ -38,6 +43,22 @@ const Customiser = () => {
       width: 280,
       height: 380,
       preserveObjectStacking: true,
+    });
+
+    initCanvas.on('selection:created', (e) => {
+      setActiveObj(e.selected[0]);
+      if (e.selected[0].type === 'i-text') {
+        setTextColor(e.selected[0].fill);
+      }
+    });
+    initCanvas.on('selection:updated', (e) => {
+      setActiveObj(e.selected[0]);
+      if (e.selected[0].type === 'i-text') {
+        setTextColor(e.selected[0].fill);
+      }
+    });
+    initCanvas.on('selection:cleared', () => {
+      setActiveObj(null);
     });
 
     setCanvas(initCanvas);
@@ -60,6 +81,16 @@ const Customiser = () => {
     canvas.add(text);
     canvas.setActiveObject(text);
     canvas.renderAll();
+  };
+  
+  const changeTextColor = (color) => {
+    setTextColor(color);
+    if (!canvas) return;
+    const activeObject = canvas.getActiveObject();
+    if (activeObject && activeObject.type === 'i-text') {
+      activeObject.set('fill', color);
+      canvas.renderAll();
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -92,16 +123,38 @@ const Customiser = () => {
     }
   };
 
-  const saveDesign = () => {
-    if (!canvas) return;
+  const getCustomizedProduct = () => {
     const dataURL = canvas.toDataURL({
       format: 'png',
       quality: 1,
     });
     
-    // In a real app, we'd send this to the backend
-    console.log("Design Saved", dataURL);
-    alert('Design saved! Added to cart.');
+    return {
+      ...(passedProduct || { _id: 'custom-tee', name: 'Custom Design T-Shirt', category: 'Custom', price: basePrice }),
+      _id: (passedProduct ? passedProduct._id : 'custom-tee') + '-custom-' + Date.now(),
+      baseProductId: passedProduct ? passedProduct._id : '1',
+      price: basePrice + customPrintPrice,
+      isCustomized: true,
+      customImage: dataURL,
+      image: displayImage,
+      colorHex: passedColor ? passedColor.hex : null,
+      colorName: passedColor ? passedColor.name : 'White',
+      name: passedProduct ? `Custom ${passedProduct.name}` : 'Custom Design T-Shirt'
+    };
+  };
+
+  const handleAddToCart = () => {
+    if (!canvas) return;
+    const customProduct = getCustomizedProduct();
+    addToCart(customProduct, selectedSize, 1);
+    toast.success('Custom design added to cart!', { icon: '🎨' });
+  };
+
+  const handleBuyNow = () => {
+    if (!canvas) return;
+    const customProduct = getCustomizedProduct();
+    addToCart(customProduct, selectedSize, 1);
+    navigate('/checkout');
   };
 
   return (
@@ -247,6 +300,21 @@ const Customiser = () => {
             <div className="bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">Edit Tools</h3>
               
+              {activeObj && activeObj.type === 'i-text' && (
+                <div className="mb-6">
+                  <label className="block text-sm font-bold text-slate-700 mb-3">Text Color</label>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="color" 
+                      value={textColor}
+                      onChange={(e) => changeTextColor(e.target.value)}
+                      className="w-12 h-12 p-1 rounded-lg border border-slate-200 cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-slate-500 uppercase">{textColor}</span>
+                  </div>
+                </div>
+              )}
+
               <button onClick={deleteActiveObject} className="w-full py-4 px-4 bg-white hover:bg-red-50 text-red-600 font-bold rounded-2xl flex items-center justify-center gap-2 transition-colors border-2 border-slate-200 hover:border-red-200 group">
                 <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Remove Selected Item
@@ -273,11 +341,15 @@ const Customiser = () => {
                   <span className="font-extrabold text-4xl text-white tracking-tight">{formatPrice(basePrice + customPrintPrice)}</span>
                 </div>
               </div>
-              
-              <button onClick={saveDesign} className="w-full py-5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-xl group relative z-10 hover:-translate-y-1 text-lg">
-                <ShoppingBag className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
-                Add to Cart
-              </button>
+              <div className="flex flex-col gap-3 relative z-10 mt-4">
+                <button onClick={handleAddToCart} className="w-full py-5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-xl group hover:-translate-y-1 text-lg">
+                  <ShoppingBag className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+                  Add to Cart
+                </button>
+                <button onClick={handleBuyNow} className="w-full py-5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-xl group hover:-translate-y-1 text-lg">
+                  Buy Now
+                </button>
+              </div>
             </div>
           </motion.div>
 

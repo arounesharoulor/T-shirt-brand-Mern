@@ -35,7 +35,7 @@ const ProductDetail = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`https://t-shirt-brand-mern.onrender.com/api/reviews/${id}`);
+      const response = await fetch(`http://localhost:5000/api/reviews/${id}`);
       const data = await response.json();
       if (data.success) {
         setReviews(data.data);
@@ -71,7 +71,7 @@ const ProductDetail = () => {
 
     setIsSubmittingReview(true);
     try {
-      const response = await fetch('https://t-shirt-brand-mern.onrender.com/api/reviews', {
+      const response = await fetch('http://localhost:5000/api/reviews', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

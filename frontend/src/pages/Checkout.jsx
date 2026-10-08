@@ -6,6 +6,20 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
+const getValidObjectId = (id) => {
+  const str = String(id || '1');
+  // If it's already a valid 24-char hex string, return it
+  if (/^[0-9a-fA-F]{24}$/.test(str)) {
+    return str;
+  }
+  // If it's a short numeric ID like "1", pad it
+  if (/^[0-9a-fA-F]+$/.test(str) && str.length < 24) {
+    return str.padStart(24, '0');
+  }
+  // Otherwise, return a safe fallback dummy ObjectId
+  return '000000000000000000000001';
+};
+
 const Checkout = () => {
   const { cartItems } = useCart();
   const { formatPrice, currency } = useCurrency();
@@ -105,7 +119,7 @@ const Checkout = () => {
     
     if (paymentMethod === 'cod') {
       try {
-        const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
+        const orderRes = await fetch('http://localhost:5000/api/orders', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,8 +131,8 @@ const Checkout = () => {
               qty: item.quantity,
               image: item.product.image,
               price: item.product.price,
-              product: String(item.product.id || item.product._id).padStart(24, '0'), // Ensure it's a valid ObjectId
-              color: item.color || 'Default', // Mongoose model requires color
+              product: getValidObjectId(item.product.isCustomized ? item.product.baseProductId : (item.product.id || item.product._id)),
+              color: item.color || item.product.colorName || item.product.color || 'Custom',
               size: item.size || 'M'
             })),
             shippingAddress: {
@@ -159,7 +173,7 @@ const Checkout = () => {
       }
 
       // Create order in DB first (so it's recorded)
-      const orderRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders', {
+      const orderRes = await fetch('http://localhost:5000/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,8 +185,8 @@ const Checkout = () => {
             qty: item.quantity,
             image: item.product.image,
             price: item.product.price,
-            product: String(item.product.id || item.product._id).padStart(24, '0'),
-            color: item.color || 'Default',
+            product: getValidObjectId(item.product.isCustomized ? item.product.baseProductId : (item.product.id || item.product._id)),
+            color: item.color || item.product.colorName || item.product.color || 'Custom',
             size: item.size || 'M'
           })),
           shippingAddress: {
@@ -199,7 +213,7 @@ const Checkout = () => {
       const dbOrderId = dbOrderData.data._id;
 
       // Initiate Razorpay transaction
-      const rzpOrderResponse = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay', {
+      const rzpOrderResponse = await fetch('http://localhost:5000/api/payment/razorpay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,7 +230,7 @@ const Checkout = () => {
       }
 
       // Get config/key
-      const configResponse = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/config');
+      const configResponse = await fetch('http://localhost:5000/api/payment/config');
       const configData = await configResponse.json();
 
       const options = {
@@ -228,7 +242,7 @@ const Checkout = () => {
         order_id: rzpOrderData.data.id,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/payment/razorpay/verify', {
+            const verifyRes = await fetch('http://localhost:5000/api/payment/razorpay/verify', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -510,8 +524,22 @@ const Checkout = () => {
             {cartItems.map((item, idx) => (
               <div key={idx} className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-xl border border-slate-200 bg-white overflow-hidden flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-100 overflow-hidden flex items-center justify-center relative">
                     <img src={item.product.image} className="w-full h-full object-cover" alt="" />
+                    {item.product.isCustomized && (
+                      <>
+                        {item.product.colorHex && item.product.colorName !== 'White' && (
+                          <div className="absolute inset-0 mix-blend-multiply opacity-60 pointer-events-none" style={{ backgroundColor: item.product.colorHex }} />
+                        )}
+                        {item.product.customImage && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div style={{ width: '60%', height: '50%', position: 'relative' }}>
+                              <img src={item.product.customImage} className="w-full h-full object-contain" />
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                   <span className="absolute -top-2 -right-2 w-5 h-5 bg-slate-500 text-white text-xs font-bold flex items-center justify-center rounded-full shadow-sm">
                     {item.quantity}

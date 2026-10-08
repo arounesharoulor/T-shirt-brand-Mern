@@ -42,7 +42,7 @@ const Profile = () => {
           };
           
           // Fetch Orders
-          const ordersRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/orders/myorders', { headers });
+          const ordersRes = await fetch('http://localhost:5000/api/orders/myorders', { headers });
           const ordersData = await ordersRes.json();
           if (ordersData.success) {
             setOrders(ordersData.data);
@@ -50,7 +50,7 @@ const Profile = () => {
           setLoadingOrders(false);
 
           // Fetch User Addresses
-          const userRes = await fetch('https://t-shirt-brand-mern.onrender.com/api/auth/me', { headers });
+          const userRes = await fetch('http://localhost:5000/api/auth/me', { headers });
           const userData = await userRes.json();
           if (userData.success && userData.data.addresses) {
             setAddresses(userData.data.addresses);

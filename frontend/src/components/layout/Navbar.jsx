@@ -31,8 +31,7 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Shop', path: '/shop' },
     { name: 'Customise', path: '/customiser' },
-    { name: 'Help', path: '/help' },
-    { name: 'Support', path: '/support' },
+    { name: 'Help & Support', path: '/help' },
   ];
 
   const toggleCurrency = () => {

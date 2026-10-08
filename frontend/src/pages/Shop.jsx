@@ -61,13 +61,13 @@ const Shop = () => {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} 
             className="text-5xl md:text-7xl font-display font-black text-white tracking-tight uppercase mb-6"
           >
-            Studio Blanks
+            Our Catalog
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="text-lg md:text-xl text-slate-300 font-medium max-w-2xl mx-auto"
           >
-            The foundation of your brand. Premium, heavyweight fabrics designed for perfect printing and an immaculate fit.
+            Browse our selection of high-quality blank apparel, ready for your custom designs.
           </motion.p>
         </div>
       </div>
@@ -279,13 +279,13 @@ const Shop = () => {
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay" />
               <div className="relative z-10 max-w-2xl mx-auto">
                 <h2 className="text-3xl sm:text-5xl font-display font-black text-white mb-6 uppercase tracking-tight">
-                  Unlock the <br/>Full Studio
+                  Join Our <br/>Community
                 </h2>
                 <p className="text-lg text-slate-300 font-medium mb-8">
                   Sign in to view the complete collection, launch the 3D customizer, and order your designs globally.
                 </p>
                 <Link to="/register" className="inline-flex items-center justify-center px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:scale-105 transition-all shadow-xl">
-                  Create Studio Account
+                  Create an Account
                 </Link>
               </div>
             </div>

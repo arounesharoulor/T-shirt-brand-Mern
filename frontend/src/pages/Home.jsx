@@ -1,7 +1,8 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Palette, Truck, ShieldCheck, Zap, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
+import { Palette, Truck, ShieldCheck, Zap, ArrowRight, CheckCircle2, Star, Sparkles, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { ALL_PRODUCTS } from '../data/products';
 
 const Home = () => {
   const { user } = useAuth();
@@ -85,9 +86,9 @@ const Home = () => {
   ];
 
   const testimonials = [
-    { name: "Sarah J.", text: "The print quality is unbelievable! The colors pop just like they did on my screen.", role: "Graphic Designer" },
-    { name: "Mike T.", text: "Super easy to use the customizer. I made matching shirts for my entire team in 10 minutes.", role: "Startup Founder" },
-    { name: "Emily R.", text: "Fastest shipping ever. The fabric is so soft, it's easily my new favorite shirt.", role: "Fashion Blogger" }
+    { name: "Sarah Jenkins", text: "The print quality is fantastic! The colors on my custom shirts look exactly like my design.", role: "Graphic Designer" },
+    { name: "Michael Torres", text: "Very easy to use the customizer. I designed matching shirts for my entire team in under 10 minutes.", role: "Business Owner" },
+    { name: "Emily Rodriguez", text: "Fast shipping and the t-shirt fabric is incredibly soft. This is easily my new favorite shirt.", role: "Customer" }
   ];
 
   return (
@@ -129,17 +130,17 @@ const Home = () => {
               >
                 <Sparkles className="w-4 h-4 text-blue-600" /> 
               </motion.div>
-              Next-Gen Fashion Studio
+              Premium Custom T-Shirts
             </motion.div>
             
             <h1 className="text-5xl sm:text-7xl font-display font-black leading-[1.05] mb-8 text-slate-900 tracking-tight">
-              Ready to wear your <br className="hidden xl:block" />
+              Design your <br className="hidden xl:block" />
               <motion.span 
                 className="relative inline-block cursor-crosshair group"
                 whileHover="hover"
               >
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 group-hover:from-blue-600 group-hover:to-indigo-600 transition-all duration-300">
-                  masterpiece?
+                  custom t-shirt
                 </span>
                 <motion.svg 
                   initial={{ pathLength: 0, opacity: 0 }}
@@ -156,7 +157,7 @@ const Home = () => {
             </h1>
             
             <p className="text-xl text-slate-600 mb-10 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
-              Join thousands of creators who have already brought their ideas to life. Premium blanks, vibrant prints, zero compromises.
+              Create high-quality, custom-printed apparel with our easy-to-use design tools. Perfect for brands, teams, or personal style.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -175,7 +176,7 @@ const Home = () => {
                 to={user ? "/shop" : "/register"} 
                 className="flex items-center justify-center text-lg px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl border-2 border-slate-200 hover:border-slate-900 transition-all duration-300 hover:-translate-y-1"
               >
-                {user ? "Browse Collection" : "Explore Studio"}
+                {user ? "Browse Collection" : "Explore Products"}
               </Link>
             </div>
             
@@ -204,8 +205,8 @@ const Home = () => {
             >
               <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white relative group">
                 <img 
-                  src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1600&auto=format&fit=crop" 
-                  alt="Streetwear model" 
+                  src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1600&auto=format&fit=crop" 
+                  alt="Custom t-shirt" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
@@ -223,8 +224,8 @@ const Home = () => {
             >
               <div className="w-full h-full rounded-[2rem] overflow-hidden shadow-xl border-8 border-white relative group">
                 <img 
-                  src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1600&auto=format&fit=crop" 
-                  alt="Fabric detail" 
+                  src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1600&auto=format&fit=crop" 
+                  alt="T-shirt rack" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
@@ -241,7 +242,7 @@ const Home = () => {
                 <CheckCircle2 className="text-white w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-slate-900 tracking-tight">Studio Grade</span>
+                <span className="font-bold text-slate-900 tracking-tight">Premium Quality</span>
                 <span className="text-sm font-medium text-slate-500">Apparel Blanks</span>
               </div>
             </motion.div>
@@ -274,6 +275,60 @@ const Home = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* 2.5 TRENDING DESIGNS SECTION */}
+      <section className="py-24 bg-slate-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-end mb-16">
+            <motion.div 
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+            >
+              <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">Trending Now</h2>
+              <p className="text-slate-600 text-lg max-w-xl">Our most popular premium blanks, ready for your custom designs.</p>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+              <Link to="/shop" className="hidden md:flex items-center gap-2 font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                View Collection <ArrowRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
+          </div>
+
+          <motion.div 
+            variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {ALL_PRODUCTS.slice(0, 4).map((product) => (
+              <motion.div key={product._id} variants={fadeUp} className="group bg-white p-4 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300">
+                <Link to={`/product/${product._id}`} className="block relative aspect-[4/5] rounded-2xl overflow-hidden mb-4 bg-slate-100">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {product.isNew && (
+                    <div className="absolute top-4 left-4 bg-white text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                      NEW
+                    </div>
+                  )}
+                </Link>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1 truncate">{product.name}</h3>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500">{product.category}</span>
+                    <span className="font-bold text-slate-900">${product.price.toFixed(2)}</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
+          <div className="mt-10 flex justify-center md:hidden">
+            <Link to="/shop" className="flex items-center gap-2 font-bold text-blue-600 bg-blue-50 px-6 py-3 rounded-full hover:bg-blue-100 transition-colors">
+              View Collection <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -363,8 +418,8 @@ const Home = () => {
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="max-w-4xl mx-auto px-4 relative z-10 text-center"
         >
-          <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8">Ready to wear your masterpiece?</h2>
-          <p className="text-xl text-slate-300 mb-10">Join thousands of creators who have already brought their ideas to life.</p>
+          <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8">Ready to create your custom design?</h2>
+          <p className="text-xl text-slate-300 mb-10">Get started with our premium custom clothing platform today.</p>
           <Link to="/customiser" className="inline-flex items-center justify-center px-10 py-5 bg-white text-slate-900 font-bold rounded-full text-lg transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
             Start Designing Now <ArrowRight className="ml-2 w-6 h-6" />
           </Link>
