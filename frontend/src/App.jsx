@@ -15,6 +15,8 @@ import Wishlist from './pages/Wishlist';
 import OrderSuccess from './pages/OrderSuccess';
 import MyOrders from './pages/MyOrders';
 import Help from './pages/Help';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminOrders from './pages/AdminOrders';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -48,6 +50,8 @@ function App() {
                     <Route path="/order-success" element={<OrderSuccess />} />
                     <Route path="/my-orders" element={<MyOrders />} />
                     <Route path="/help" element={<Help />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/orders" element={<AdminOrders />} />
                   </Routes>
                 </main>
               </div>

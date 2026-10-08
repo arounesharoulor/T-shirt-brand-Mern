@@ -69,6 +69,16 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+            {user && user.role === 'admin' && (
+              <Link
+                to="/admin"
+                className={`text-sm font-bold transition-colors hover:text-primary ${
+                  location.pathname.startsWith('/admin') ? 'text-primary' : 'text-slate-600'
+                }`}
+              >
+                Admin Panel
+              </Link>
+            )}
           </div>
 
           {/* Desktop Right Actions */}
@@ -148,6 +158,19 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              {user && user.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-bold px-4 py-2 rounded-xl transition-colors ${
+                    location.pathname.startsWith('/admin')
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Admin Panel
+                </Link>
+              )}
               <div className="h-px bg-slate-100 my-2" />
               <Link
                 to={user ? "/profile" : "/login"}
