@@ -131,9 +131,9 @@ const Profile = () => {
 
   const tabs = [
     { id: 'personal', label: 'Account Details', icon: User },
-    { id: 'orders', label: 'Order History', icon: ShoppingBag },
+    ...(user?.role !== 'admin' ? [{ id: 'orders', label: 'Order History', icon: ShoppingBag }] : []),
     { id: 'security', label: 'Security', icon: Lock },
-    { id: 'addresses', label: 'Saved Addresses', icon: MapPin },
+    ...(user?.role !== 'admin' ? [{ id: 'addresses', label: 'Saved Addresses', icon: MapPin }] : []),
   ];
 
   return (
@@ -167,7 +167,8 @@ const Profile = () => {
             <div className="text-center sm:text-left pb-2">
               <h1 className="text-3xl font-display font-extrabold text-slate-900">{user.name || 'User'}</h1>
               <p className="text-slate-500 font-medium mt-1 flex items-center justify-center sm:justify-start gap-1">
-                <ShieldCheck className="w-4 h-4 text-green-500" /> Premium Member
+                <ShieldCheck className={`w-4 h-4 ${user.role === 'admin' ? 'text-indigo-500' : 'text-green-500'}`} /> 
+                {user.role === 'admin' ? 'System Administrator' : 'Premium Member'}
               </p>
             </div>
           </div>
