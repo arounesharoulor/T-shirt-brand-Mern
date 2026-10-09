@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
         
         setUser(data.user);
         localStorage.setItem('token', data.token);
-        return { success: true };
+        return { success: true, user: data.user };
       } else {
         return { success: false, error: data.error };
       }
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
         
         setUser(data.user);
         localStorage.setItem('token', data.token);
-        return { success: true };
+        return { success: true, user: data.user };
       } else {
         return { success: false, error: data.error };
       }

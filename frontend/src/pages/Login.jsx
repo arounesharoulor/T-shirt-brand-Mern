@@ -32,7 +32,11 @@ const Login = () => {
     });
 
     if (res.success) {
-      navigate('/shop');
+      if (res.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/shop');
+      }
     } else {
       setError(res.error || 'Login failed. Please check your credentials.');
     }
